@@ -1,0 +1,65 @@
+{
+  "id": "4251947",
+  "name": "发布系统",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "8106263",
+      "name": "history",
+      "font_class": "history",
+      "unicode": "e69b",
+      "unicode_decimal": 59035
+    },
+    {
+      "icon_id": "6146008",
+      "name": "services",
+      "font_class": "services",
+      "unicode": "e72a",
+      "unicode_decimal": 59178
+    },
+    {
+      "icon_id": "23502569",
+      "name": "Create",
+      "font_class": "Create",
+      "unicode": "e9e4",
+      "unicode_decimal": 59876
+    },
+    {
+      "icon_id": "1312367",
+      "name": "icon_deploy",
+      "font_class": "icon_deploy",
+      "unicode": "e616",
+      "unicode_decimal": 58902
+    },
+    {
+      "icon_id": "12886741",
+      "name": "ic_platform",
+      "font_class": "ic_platform",
+      "unicode": "e602",
+      "unicode_decimal": 58882
+    },
+    {
+      "icon_id": "4765975",
+      "name": "project",
+      "font_class": "project",
+      "unicode": "e798",
+      "unicode_decimal": 59288
+    },
+    {
+      "icon_id": "7811804",
+      "name": "deploy",
+      "font_class": "deploy",
+      "unicode": "e61e",
+      "unicode_decimal": 58910
+    },
+    {
+      "icon_id": "34453299",
+      "name": "template",
+      "font_class": "template",
+      "unicode": "e86f",
+      "unicode_decimal": 59503
+    }
+  ]
+}
