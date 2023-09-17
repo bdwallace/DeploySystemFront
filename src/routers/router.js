@@ -146,7 +146,7 @@ export const constantRoutes = [
       path: "history",
       name: "发布进度",
       hidden: false,
-      component: () => import('@/views/singlepage/deployHistory.vue'),
+      component: () => import('@/views/singlepage/deployProcess.vue'),
       meta: {
         title: "发布进度",
         icon: "iconfont icon-history"

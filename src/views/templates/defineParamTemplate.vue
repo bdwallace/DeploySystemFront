@@ -22,8 +22,13 @@
               <el-tag size="mini" v-for="item in scope.row.param_list" style="margin-right: 3px">{{ item.value }}</el-tag>
             </template>
           </el-table-column>
+          <el-table-column prop="with_service" label="服务关联" fit align="center">
+            <template slot-scope="scope">
+              <el-tag size="small" style="margin-right: 3px;margin-top: 5px;" v-for="item in scope.row.with_service">{{ item.name }}</el-tag>
+            </template>
+          </el-table-column>
           <el-table-column prop="create_time" label="创建时间" width="180" align="center"></el-table-column>
-          <el-table-column prop="remark" label="备注" width="180" align="center"></el-table-column>
+<!--          <el-table-column prop="remark" label="备注" width="180" align="center"></el-table-column>-->
           <el-table-column label="操作" width="180" align="center" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" icon="el-icon-edit" size="small" @click="editClick(scope.row)">编辑</el-button>

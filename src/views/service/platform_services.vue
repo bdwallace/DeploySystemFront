@@ -19,7 +19,7 @@
           <el-table-column type="selection" width="40"></el-table-column>
           <el-table-column prop="service_name" label="服务名称" width="150" align="center"></el-table-column>
           <el-table-column prop="platform" label="平台所属" width="150" align="center"></el-table-column>
-          <el-table-column prop="envir" label="环境所属" width="120" align="center"></el-table-column>
+          <el-table-column prop="envir" label="项目环境" width="120" align="center"></el-table-column>
           <el-table-column prop="ports" label="端口" width="90px"  align="center"></el-table-column>
           <el-table-column prop="host" label="主机" fit align="center">
             <template slot-scope="scope">

@@ -5,85 +5,78 @@ import axios from "@/utils/index";
 
 
 // 登录请求
-export function login(data){
+export function getProject(params){
   return axios({
-    url: '/login',
+    url: '/project',
+    method: 'get',
+    params
+  })
+}
+
+export function addProject(data){
+  return axios({
+    url: '/project',
     method: 'post',
     data
   })
 }
 
-export function logout(params){
+export function editProject(params){
   return axios({
-    url: '/login',
-    method: 'delete',
-    params
-  })
-}
-
-export function setPassword(data){
-  return axios({
-    url: '/login',
-    method: 'patch',
-    data
-  })
-}
-
-
-export function getChartData(params){
-  return axios({
-    url: '/beindex',
-    method: 'get',
-    params
-  })
-}
-
-
-export function getMenusByUser(params){
-  return axios({
-    url: '/dashboard',
-    method: 'get',
-    params
-  })
-}
-
-export function getUsers(params){
-  return axios({
-    url: '/users',
-    method: 'get',
-    params
-  })
-}
-
-
-export function addUsers(data){
-  return axios({
-    url: '/users',
-    method: 'post',
-    data
-  })
-}
-
-export function editUsers(data){
-  return axios({
-    url: '/users',
-    method: 'patch',
-    data
-  })
-}
-
-export function updateUser(params){
-  return axios({
-    url: '/users',
+    url: '/project',
     method: 'put',
     params
   })
 }
 
 
-export function deleteUsers(params){
+export function deleteProject(params){
   return axios({
-    url: '/users',
+    url: '/project',
+    method: 'delete',
+    params
+  })
+}
+
+
+export function getPlatform(params){
+  return axios({
+    url: '/platform',
+    method: 'get',
+    params
+  })
+}
+
+
+
+export function addPlatform(data){
+  return axios({
+    url: '/platform',
+    method: 'post',
+    data
+  })
+}
+
+export function updatePlatform(data){
+  return axios({
+    url: '/platform',
+    method: 'patch',
+    data
+  })
+}
+
+export function editPlatform(params){
+  return axios({
+    url: '/platform',
+    method: 'put',
+    params
+  })
+}
+
+
+export function deletePlatform(params){
+  return axios({
+    url: '/platform',
     method: 'delete',
     params
   })

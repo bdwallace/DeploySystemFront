@@ -19,7 +19,7 @@
           <el-table-column prop="deploy_user" label="发布用户" width="100" align="center"></el-table-column>
           <el-table-column prop="deploy_service" label="服务名称" fit align="center"></el-table-column>
 
-          <el-table-column prop="deploy_envir" label="部署环境" width="100" align="center"></el-table-column>
+          <el-table-column prop="deploy_envir" label="项目环境" width="100" align="center"></el-table-column>
           <el-table-column prop="old_version" label="原版本" fit align="center"></el-table-column>
           <el-table-column prop="new_version" label="目标版本" fit align="center"></el-table-column>
           <el-table-column prop="target_host" label="目标主机" width="135" align="center">

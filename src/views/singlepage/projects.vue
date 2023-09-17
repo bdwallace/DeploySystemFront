@@ -17,7 +17,7 @@
           <el-table-column type="selection" width="40"></el-table-column>
           <el-table-column prop="project_name" label="项目名称" fit align="center"></el-table-column>
           <el-table-column prop="alias" label="别名" fit align="center"></el-table-column>
-          <el-table-column prop="nacos_addr" label="Nacos地址" fit align="center"></el-table-column>
+          <el-table-column prop="nacos_url" label="Nacos地址" fit align="center"></el-table-column>
           <el-table-column prop="create_time" label="创建时间" fit align="center"></el-table-column>
           <el-table-column prop="update_time" label="更新时间" fit align="center"></el-table-column>
 <!--          <el-table-column prop="remark" label="备注" fit align="center"></el-table-column>-->
@@ -44,46 +44,46 @@
           </el-form-item>
 
           <el-form-item label="Nacos地址" :label-width="formLabelWidth">
-            <el-input v-model="addProjectData.nacos_addr" style="width: 85%" placeholder="Nacos地址"></el-input>
+            <el-input v-model="addProjectData.nacos_url" style="width: 85%" placeholder="Nacos地址"></el-input>
           </el-form-item>
           <el-form-item label="Nacos用户名" :label-width="formLabelWidth">
             <el-input v-model="addProjectData.nacos_user" style="width: 85%" placeholder="Nacos用户名"></el-input>
           </el-form-item>
           <el-form-item label="Nacos密码" :label-width="formLabelWidth">
-            <el-input v-model="addProjectData.nacos_password" style="width: 85%" placeholder="Nacos密码"></el-input>
+            <el-input v-model="addProjectData.nacos_pwd" style="width: 85%" placeholder="Nacos密码"></el-input>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer" style="text-align: center">
           <el-button @click="dialogCreateProjectVisable=false">取 消</el-button>
-          <el-button type="primary" @click="addRoleCommit">确 定</el-button>
+          <el-button type="primary" @click="addProjectCommit">确 定</el-button>
         </div>
       </el-dialog>
 
 
       <el-dialog title="编辑" :visible.sync="dialogEditVisable" width="50%">
         <el-form :model="editData">
-          <el-form-item label="项目名称" :label-width="formLabelWidth" required>
-            <el-input v-model="editData.project_name" style="width: 85%" placeholder="项目名称"></el-input>
+          <el-form-item label="项目名称" :label-width="formLabelWidth" >
+            <el-input v-model="editData.project_name" style="width: 85%" placeholder="项目名称" disabled></el-input>
           </el-form-item>
 
           <el-form-item label="项目别名" :label-width="formLabelWidth" required>
-            <el-input v-model="editData.alias" style="width: 85%" placeholder="项目别名"></el-input>
+            <el-input v-model="editData.alias" style="width: 85%" placeholder="项目别名" disabled></el-input>
           </el-form-item>
 
           <el-form-item label="Nacos地址" :label-width="formLabelWidth">
-            <el-input v-model="editData.nacos_addr" style="width: 85%" placeholder="Nacos地址"></el-input>
+            <el-input v-model="editData.nacos_url" style="width: 85%" placeholder="Nacos地址"></el-input>
           </el-form-item>
           <el-form-item label="Nacos用户名" :label-width="formLabelWidth">
             <el-input v-model="editData.nacos_user" style="width: 85%" placeholder="Nacos用户名"></el-input>
           </el-form-item>
           <el-form-item label="Nacos密码" :label-width="formLabelWidth">
-            <el-input v-model="editData.nacos_password" style="width: 85%" placeholder="Nacos密码"></el-input>
+            <el-input v-model="editData.nacos_pwd" style="width: 85%" placeholder="Nacos密码"></el-input>
           </el-form-item>
         </el-form>
 
         <div slot="footer" class="dialog-footer" style="text-align: center">
           <el-button @click="dialogEditVisable = false">取 消</el-button>
-          <el-button type="primary" @click="editRoleCommit">确 定</el-button>
+          <el-button type="primary" @click="editProjectCommit">确 定</el-button>
         </div>
       </el-dialog>
 
@@ -103,11 +103,7 @@
 <script>
 
 import {
-  deleteDomains,
-  getMenusGroup,
-  getApiGroup,
-  addRoles,
-  getRoles, editRoles, deleteRoles, getGroups
+  addProject, getProject, editProject, deleteProject
 } from "@/api";
 
 export default {
@@ -117,34 +113,27 @@ export default {
       dialogCreateProjectVisable: false,
       dialogEditVisable: false,
       formLabelWidth: "100px",
-      addProjectData: {
-        menu_groups: [],
-        api_groups: []
-      },
-      editData: {
-        role_name: "",
-        menu_groups: [],
-        api_groups: []
-      },
+      addProjectData: {},
+      editData: {},
       menu_groups:[],
       api_groups:[],
       params: {page: 1, pagesize: 15, total: 0, search: ""},
       multipleSelection: [],
       projects: [],
       tableData: [
-        {project_name: "预生产", alias: "Pre", nacos_addr: "172.166.13.201:8848", create_time: "2020-05-19 18:59:54", update_time: "2023-05-07 15:39:45"},
-        {project_name: "步多多", alias: "bdd", nacos_addr: "10.9.100.51:8848", create_time: "2020-07-01 14:23:14", update_time: "2023-05-07 15:39:45"},
-        {project_name: "微聊", alias: "wl", nacos_addr: "10.210.0.91:8080", create_time: "2020-07-21 17:32:01", update_time: "2023-05-07 15:39:45"},
-        {project_name: "开发环境钱包", alias: "wallet-dev", nacos_addr: "10.210.1.233:8080", create_time: "2021-04-15 13:03:40", update_time: "2023-05-07 15:39:45"},
-        {project_name: "预生产环境钱包", alias: "wallet-pre", nacos_addr: "172.166.8.54:8848", create_time: "2021-07-27 17:04:06", update_time: "2023-05-07 15:39:45"},
-        {project_name: "开发C2C", alias: "c2c-dev", nacos_addr: "172.166.13.201:8848", create_time: "2022-01-28 13:13:17", update_time: "2023-05-07 15:39:45"},
-        {project_name: "预生产c2c", alias: "c2c-pre", nacos_addr: "172.166.13.201:8848", create_time: "2022-02-12 10:14:45", update_time: "2023-05-07 15:39:45"},
+        {project_name: "预生产", alias: "Pre", nacos_url: "172.166.13.201:8848", create_time: "2020-05-19 18:59:54", update_time: "2023-05-07 15:39:45"},
+        {project_name: "步多多", alias: "bdd", nacos_url: "10.9.100.51:8848", create_time: "2020-07-01 14:23:14", update_time: "2023-05-07 15:39:45"},
+        {project_name: "微聊", alias: "wl", nacos_url: "10.210.0.91:8080", create_time: "2020-07-21 17:32:01", update_time: "2023-05-07 15:39:45"},
+        {project_name: "开发环境钱包", alias: "wallet-dev", nacos_url: "10.210.1.233:8080", create_time: "2021-04-15 13:03:40", update_time: "2023-05-07 15:39:45"},
+        {project_name: "预生产环境钱包", alias: "wallet-pre", nacos_url: "172.166.8.54:8848", create_time: "2021-07-27 17:04:06", update_time: "2023-05-07 15:39:45"},
+        {project_name: "开发C2C", alias: "c2c-dev", nacos_url: "172.166.13.201:8848", create_time: "2022-01-28 13:13:17", update_time: "2023-05-07 15:39:45"},
+        {project_name: "预生产c2c", alias: "c2c-pre", nacos_url: "172.166.13.201:8848", create_time: "2022-02-12 10:14:45", update_time: "2023-05-07 15:39:45"},
 
       ]
     }
   },
   created() {
-    // this.fetchData()
+    this.fetchData()
   },
   methods: {
     currentChange(page){
@@ -156,11 +145,11 @@ export default {
       this.fetchData()
     },
     handleSelectionChange(val) {
-      console.log(val)
+      // console.log(val)
       this.multipleSelection = val
     },
     async fetchData(){
-      var resp = await getRoles(this.params).catch(() => {
+      var resp = await getProject(this.params).catch(() => {
         this.$message({type: 'error', message: "请求错误"})
         return 0
       })
@@ -172,27 +161,6 @@ export default {
         this.params.total = resp.total
       }
 
-      var response = await getGroups(this.params).catch(() => {
-        this.$message({type: 'error', message: "请求错误"})
-        return 0
-      })
-      if (response.code !== 200){
-        this.$message({type: 'warning', message: response.msg})
-        return 0
-      }else {
-        // this.menu_groups = response.data
-        // this.params.total = response.total
-        this.menu_groups = []
-        this.api_groups = []
-        response.data.forEach((item) => {
-          if (item['group_type'] === "菜单组"){
-            this.menu_groups.push({label: item['group_name'], value: item['id']})
-          }else if (item['group_type'] === "权限组"){
-            this.api_groups.push({label: item['group_name'], value: item['id']})
-          }
-
-        })
-      }
 
     },
     deleteDomainClick(row) {
@@ -202,13 +170,13 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
-        // var response = await deleteRoles({"id": row.id})
-        // if (response.code === 200) {
-        //   this.$message({type: 'success', message: response.msg});
-        //   await this.fetchData()
-        // } else {
-        //   this.$message({type: 'error', message: response.msg});
-        // }
+        var response = await deleteProject({"ids": row.id})
+        if (response.code === 200) {
+          this.$message({type: 'success', message: response.msg});
+          await this.fetchData()
+        } else {
+          this.$message({type: 'error', message: response.msg});
+        }
       }).catch(() => {
         this.$message({type: 'info', message: '已取消删除'});
       })
@@ -218,9 +186,9 @@ export default {
       this.editData = row
       this.dialogEditVisable = true
     },
-    async editRoleCommit(){
-      console.log(this.editData)
-      var response = await editRoles(this.editData).catch(() => {
+    async editProjectCommit(){
+      // console.log(this.editData)
+      var response = await editProject(this.editData).catch(() => {
         this.$message({type: "error", message: "请求失败"})
         return 0
       })
@@ -232,9 +200,9 @@ export default {
       this.dialogEditVisable = false
       await this.fetchData()
     },
-    async addRoleCommit(){
+    async addProjectCommit(){
       // console.log(this.addProjectData)
-      var response = await addRoles(this.addProjectData).catch(() => {
+      var response = await addProject(this.addProjectData).catch(() => {
         this.$message({type: 'error', message: "请求错误"})
         return 0
       })
@@ -243,8 +211,9 @@ export default {
       }else {
         this.$message({type: 'success', message: response.msg})
       }
-      this.dialogAddRoleVisable = false
+      this.dialogCreateProjectVisable = false
       await this.fetchData()
+      this.addProjectData = {}
 
     },
   }

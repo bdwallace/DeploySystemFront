@@ -48,6 +48,8 @@
 
 <script>
 
+import {getPlatform} from "@/api";
+
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: 'Platform',
@@ -85,7 +87,17 @@ export default {
       this.multipleSelection = val
     },
     async fetchData(){
-
+      var resp = await getPlatform(this.params).catch(() => {
+        this.$message({type: 'error', message: "请求错误"})
+        return 0
+      })
+      if (resp.code !== 200){
+        this.$message({type: 'warning', message: resp.msg})
+        return 0
+      }else {
+        this.tableData = resp.data
+        this.params.total = resp.total
+      }
     },
     createPlatformClick(){
       this.$router.push('/sg/cp')
