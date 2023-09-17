@@ -28,11 +28,13 @@
                 <el-tag size="small" style="margin-right: 3px;width: 110px" type="info">{{ item.inner_ip }}</el-tag>
                 <el-tag size="small" style="margin-right: 3px;width: 83px" v-if="item.run_time==='未知'" type="warning" >{{ item.run_time }}</el-tag>
                 <el-tag size="small" style="margin-right: 3px;" v-else>{{ item.run_time }}</el-tag>
-                <el-tooltip effect="light" content="http://54.179.119.160:8134/login" placement="left">
+                <el-tooltip effect="light" content="http://54.179.119.160:8134/login" placement="left" style="margin-right: 5px">
                   <el-tag v-if="item.health==='200'" size="small" type="success" >健康</el-tag>
                   <el-tag v-else-if="item.health==='未知'" size="small" type="warning">未知</el-tag>
                   <el-tag v-else type="danger" size="small">异常</el-tag>
                 </el-tooltip>
+                <el-button size="mini" type="primary" @click="restartClick(item)">重启</el-button>
+                <el-button size="mini" type="primary" @click="closeClick(item)" style="margin-left: 3px">关闭</el-button>
               </div>
             </template>
           </el-table-column>
@@ -44,13 +46,15 @@
           <el-table-column prop="online" label="上下线" width="75px" align="center">
             <template scope="scope">
               <div v-for="item in scope.row.servers">
-                <el-switch v-model="item.online"
+                <el-tooltip :content="item.online" placement="top">
+                  <el-switch v-model="item.online"
                     active-color="#13ce66"
                     inactive-color="#ff4949"
-                    active-value="on"
-                    inactive-value="off"
+                    active-value="上线"
+                    inactive-value="下线"
                     @change="linechange(scope.row)">
-                </el-switch>
+                  </el-switch>
+                </el-tooltip>
               </div>
             </template>
           </el-table-column>
@@ -144,31 +148,31 @@ export default {
       projects: [],
       tableData: [
         {service_name: "share_agent_6hao", envir: "预生产", ports: "8117:8117", deploy_time: "2023-9-12 12:00:00", platform: "预生产3300-U8", servers: [
-          {public_ip: "152.221.175.184", inner_ip: "172.166.107.254",run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "on"}],
+          {public_ip: "152.221.175.184", inner_ip: "172.166.107.254",run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"}],
         },
         {service_name: "download_6hao_2", envir: "预生产", ports: "8117:8117", deploy_time: "2023-9-12 12:00:00", platform: "Pre-桑巴舞-3302", servers: [
-          {public_ip: "52.221.75.184", inner_ip: "172.166.97.254",run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "on"},
-          {public_ip: "18.136.78.64",inner_ip: "172.166.97.172", run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "on"}],
+          {public_ip: "52.221.75.184", inner_ip: "172.166.97.254",run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"},
+          {public_ip: "18.136.78.64",inner_ip: "172.166.97.172", run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"}],
         },
         {service_name: "customer_6hao", envir: "预生产", ports: "8117:8117", deploy_time: "2023-9-12 12:00:00", platform: "aozhou_kaijiang", servers: [
-          {public_ip: "52.221.75.184", inner_ip: "172.166.97.254",run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "on"},
-          {public_ip: "18.136.78.64",inner_ip: "172.166.97.172", run_version: "RLS_LOTTERY_20230904_01", health: "200", run_time: "Up 37 hours", online: "on"},
-          {public_ip: "18.136.78.59",inner_ip: "172.166.97.68", run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "on"},],
+          {public_ip: "52.221.75.184", inner_ip: "172.166.97.254",run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"},
+          {public_ip: "18.136.78.64",inner_ip: "172.166.97.172", run_version: "RLS_LOTTERY_20230904_01", health: "200", run_time: "Up 37 hours", online: "上线"},
+          {public_ip: "18.136.78.59",inner_ip: "172.166.97.68", run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"},],
         },
           {service_name: "agent_6hao", envir: "预生产", ports: "8117:8117", deploy_time: "2023-9-12 12:00:00", platform: "aozhou_kaijiang", servers: [
-          {public_ip: "52.221.75.184", inner_ip: "172.166.97.254",run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "on"},
-          {public_ip: "18.136.78.64",inner_ip: "172.166.97.172", run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "on"}],
+          {public_ip: "52.221.75.184", inner_ip: "172.166.97.254",run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"},
+          {public_ip: "18.136.78.64",inner_ip: "172.166.97.172", run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"}],
         },
           {service_name: "merchant_6hao", envir: "预生产", ports: "8117:8117", deploy_time: "2023-9-12 12:00:00", platform: "aozhou_kaijiang", servers: [
-          {public_ip: "52.221.75.184", inner_ip: "172.166.97.254",run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "on"},
-          {public_ip: "18.136.78.64",inner_ip: "172.166.97.172", run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "on"}],
+          {public_ip: "52.221.75.184", inner_ip: "172.166.97.254",run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"},
+          {public_ip: "18.136.78.64",inner_ip: "172.166.97.172", run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"}],
         },
           {service_name: "chat-backend-6hao", envir: "预生产", ports: "8117:8117", deploy_time: "2023-9-12 12:00:00", platform: "Pre-桑巴舞-3302", servers: [
-          {public_ip: "18.136.78.64",inner_ip: "172.166.97.172", run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "on"}],
+          {public_ip: "18.136.78.64",inner_ip: "172.166.97.172", run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"}],
         },
           {service_name: "sedie_6hao", envir: "预生产", ports: "8117:8117", deploy_time: "2023-9-12 12:00:00", platform: "Pre-桑巴舞-3302", servers: [
-          {public_ip: "52.221.75.184", inner_ip: "172.166.97.254",run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "on"},
-          {public_ip: "18.136.78.64",inner_ip: "172.166.97.172", run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "on"}],
+          {public_ip: "52.221.75.184", inner_ip: "172.166.97.254",run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"},
+          {public_ip: "18.136.78.64",inner_ip: "172.166.97.172", run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"}],
         },
       ]
     }
@@ -258,8 +262,13 @@ export default {
     deployClick(row){
       this.editData = row
       this.$router.push('/services/deploy/' + row.service_name)
-    }
+    },
+    restartClick(item){
 
+    },
+    closeClick(item){
+
+    }
 
   }
 }

@@ -48,13 +48,15 @@
           <el-table-column prop="servers" label="主机" fit align="center">
             <template slot-scope="scope">
               <div v-for="item in scope.row.servers">
-                <el-switch v-model="item.online" style="margin-right: 3px"
+                <el-tooltip :content="item.online" placement="top">
+                  <el-switch v-model="item.online"
                     active-color="#13ce66"
                     inactive-color="#ff4949"
-                    active-value="on"
-                    inactive-value="off"
+                    active-value="上线"
+                    inactive-value="下线"
                     @change="linechange(scope.row)">
-                </el-switch>
+                  </el-switch>
+                </el-tooltip>
                 <el-tag size="small" style="margin-right: 3px;width: 110px;margin-top: 3px" >{{ item.public_ip }}</el-tag>
                 <el-tag size="small" style="margin-right: 3px;width: 110px" type="info">{{ item.inner_ip }}</el-tag>
                 <el-tag size="small" style="margin-right: 3px;width: 83px" v-if="item.run_time==='未知'" type="warning" >{{ item.run_time }}</el-tag>
@@ -123,8 +125,8 @@ export default {
       ],
       tableData: [
         {svc_name: "eureka", port: "8134:8134", envir: "预生产hgjdfgjjklyil", platform: "aozhou_kaijiang", tag: "", release: [{id: 1, tag_name: "RLS_LOTTERY_20230620_01"},{id: 2, tag_name: "dev-temp"},{id: 3, tag_name: "RLS_OK_20230817_02"},{id: 4, tag_name: "RLS_LOTTERY_20230620_03"}], servers: [
-          {public_ip: "52.221.75.184", inner_ip: "172.166.97.254",run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "on"},
-          {public_ip: "18.136.78.64",inner_ip: "172.166.97.172", run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "on"}],}
+          {public_ip: "52.221.75.184", inner_ip: "172.166.97.254",run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"},
+          {public_ip: "18.136.78.64",inner_ip: "172.166.97.172", run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"}],}
       ],
       showText: [
         {color: '#00ff00', text: "daf550de2b27fa8226b5344bc5dae972db368148736d10118521c21642461f99"},

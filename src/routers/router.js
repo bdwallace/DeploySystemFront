@@ -95,7 +95,7 @@ export const constantRoutes = [
         path: 'deploy/:id',
         component: () => import('@/views/service/deploy.vue'),
         name: '发布服务',
-        hidden: false,
+        hidden: true,
         meta: { title: '发布服务', icon: 'iconfont icon-yonghuguanli' }
       },
     ]

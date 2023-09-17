@@ -40,8 +40,8 @@
           <el-table-column prop="create_time" label="更新时间" width="150" align="center"></el-table-column>
           <el-table-column prop="option" label="操作" width="180" align="center">
             <template slot-scope="scope">
-              <el-button type="text" icon="el-icon-edit" size="mini" @click="editClick(scope.row)">编辑</el-button>
-              <el-button type="text" icon="el-icon-delete" size="mini" @click="deleteGroupsClick(scope.row)">删除</el-button>
+              <el-button type="text" icon="el-icon-edit" size="small" @click="editClick(scope.row)">编辑</el-button>
+              <el-button type="text" icon="el-icon-delete" size="small" @click="deleteGroupsClick(scope.row)">删除</el-button>
             </template>
           </el-table-column>
 

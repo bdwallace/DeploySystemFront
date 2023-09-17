@@ -26,8 +26,8 @@
           <el-table-column prop="remark" label="备注" width="180" align="center"></el-table-column>
           <el-table-column label="操作" width="180" align="center" fixed="right">
             <template slot-scope="scope">
-              <el-button type="text" icon="el-icon-edit" size="mini" @click="editClick(scope.row)">编辑</el-button>
-              <el-button type="text" icon="el-icon-delete" size="mini" style="color: #f56c6c" @click="deleteApiClick(scope.row)">删除</el-button>
+              <el-button type="text" icon="el-icon-edit" size="small" @click="editClick(scope.row)">编辑</el-button>
+              <el-button type="text" icon="el-icon-delete" size="small" style="color: #f56c6c" @click="deleteApiClick(scope.row)">删除</el-button>
 
             </template>
 
@@ -99,7 +99,7 @@ export default {
   name: "domain_manage",
   data() {
     return {
-      dialogAddVisable: true,
+      dialogAddVisable: false,
       dialogAddApiVisable: false,
       dialogEditVisable: false,
       formLabelWidth: "100px",
