@@ -57,19 +57,13 @@ export function addPlatform(data){
   })
 }
 
-export function updatePlatform(data){
+
+
+export function editPlatform(data){
   return axios({
-    url: '/platform',
+    url: '/platform/',
     method: 'patch',
     data
-  })
-}
-
-export function editPlatform(params){
-  return axios({
-    url: '/platform',
-    method: 'put',
-    params
   })
 }
 

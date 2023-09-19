@@ -186,7 +186,7 @@ export const constantRoutes = [
         icon: "iconfont icon-history"
       }
     },{
-      path: "cp",
+      path: "cp/:id",
       name: "创建平台",
       hidden: false,
       component: () => import('@/views/singlepage/createPlatform.vue'),

@@ -26,7 +26,7 @@
           <el-table-column label="操作" width="180" align="center" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" icon="el-icon-edit" size="small" @click="editClick(scope.row)">编辑</el-button>
-              <el-button type="text" icon="el-icon-delete" size="small" style="color: #f56c6c" @click="deleteDomainClick(scope.row)">删除</el-button>
+              <el-button type="text" icon="el-icon-delete" size="small" style="color: #f56c6c" @click="deleteClick(scope.row)">删除</el-button>
             </template>
           </el-table-column>
 
@@ -48,7 +48,7 @@
 
 <script>
 
-import {getPlatform} from "@/api";
+import {getPlatform, deletePlatform} from "@/api";
 
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
@@ -100,7 +100,22 @@ export default {
       }
     },
     createPlatformClick(){
-      this.$router.push('/sg/cp')
+      this.$router.push('/sg/cp/0')
+    },
+    editClick(row){
+      this.$router.push('/sg/cp/' + row.id)
+    },
+    async deleteClick(row){
+      var response = await deletePlatform({"ids": row.id}).catch(() => {
+        this.$message({type: 'error', message: "请求错误"})
+        return 0
+      })
+      if (response.code !== 200){
+        this.$message({type: 'warning', message: response.msg})
+      }else {
+        this.$message({type: 'success', message: response.msg})
+      }
+      await this.fetchData()
     }
   }
 }

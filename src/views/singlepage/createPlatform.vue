@@ -16,7 +16,7 @@
                 <th style="padding-left: 20px">删除</th>
               </tr>
 
-              <tr v-for="(item, index) in formData.params" :key="item" style="margin-bottom:50px">
+              <tr v-for="(item, index) in formData.config" :key="index" style="margin-bottom:50px">
 
                 <td style="text-align:right;width:300px;padding-right:10px">
                     <el-input type="textarea" autosize placeholder="输入内容" style="direction: rtl;" v-model="item.name"></el-input>
@@ -49,18 +49,21 @@
                 </td>
               </tr>
 
-              <tr><td> &nbsp; </td></tr>
+              <tr><td> &nbsp </td></tr>
             </table>
         </el-form-item>
       </el-form>
 
-      <el-button type="primary" @click="createTemplateCommit" :loading="on_submit_loading">立即提交</el-button>
+      <el-button type="primary" @click="createTemplateCommit('create')" v-if="id===0">立即提交</el-button>
+      <el-button type="primary" @click="createTemplateCommit('update')" v-else>立即提交</el-button>
       <el-button @click="$router.back()">取消</el-button>
     </div>
   </el-container>
 </template>
 
 <script>
+
+import {addPlatform, getPlatform, editPlatform} from "@/api";
 
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
@@ -70,11 +73,12 @@ export default {
       params: {page: 1, pagesize: 15, total: 0, search: ""},
       itemDockerPort: [2375, 32375],
       on_submit_loading: false,
+      id: this.$route.params.id,
       input: {},
       formData: {
-        params: [
+        config: [
           {name: "CHANNEL_ID", content: ""},{name: "CHANNEL_NAME", content: ""},{name: "ENCRYPTED_KEY", content: ""},{name: "KEYWORDS", content: ""},
-            {name: "META_DESC", content: ""},{name: "PLATFORM", content: ""},{name: "SKIN_NAME", content: ""},
+          {name: "META_DESC", content: ""},{name: "PLATFORM", content: ""},{name: "SKIN_NAME", content: ""},
         ],
       }
     }
@@ -84,27 +88,47 @@ export default {
   },
   methods: {
     async fetchData() {
-
+      this.params.search = this.$route.params.id
+      var resp = await getPlatform(this.params).catch(() => {
+        this.$message({type: 'error', message: "请求错误"})
+        return 0
+      })
+      if (resp.code !== 200){
+        this.$message({type: 'warning', message: resp.msg})
+        return 0
+      }else {
+        this.formData = resp.data[0]
+        this.params.total = resp.total
+      }
     },
     del_value(index) {
         this.load_data = true
-        delete this.formData.params.splice(index, 1)
+        delete this.formData.config.splice(index, 1)
         this.load_data = false
     },
 
     add_value() {
-      for(var i in this.josns) {
-        this.input.name=''
-        return
-      }
-      this.formData.params.push({name:this.input.name, content:this.input.content})
-      this.input.name=''
-      this.input.content=''
-      //可以强制重新渲染页面
-      // this.$forceUpdate();
+      this.formData.config.push({name:"", content: ""})
     },
-    createTemplateCommit(){
+    async createTemplateCommit(commit_type){
+      if (commit_type === "create"){
+        var response = await addPlatform(this.formData).catch(() => {
+          this.$message({type: 'error', message: "请求错误"})
+          return 0
+        })
+      } else if (commit_type==='update'){
+        var response = await editPlatform(this.formData).catch(() => {
+          this.$message({type: 'error', message: "请求错误"})
+          return 0
+        })
+      }
 
+      if (response.code !== 200){
+        this.$message({type: 'warning', message: response.msg})
+      }else {
+        this.$message({type: 'success', message: response.msg})
+      }
+      this.$router.push('/platform')
     },
   }
 }
