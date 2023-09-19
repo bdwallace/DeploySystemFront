@@ -5,7 +5,7 @@
         <el-input placeholder="请输入搜索内容, 支持所有内容模糊搜索, 回车或点击按钮搜索" v-model="params.search" class="input-with-select" @change="fetchData">
           <el-button type="primary" slot="append" icon="el-icon-search" @click="fetchData">搜索</el-button>
         </el-input>
-        <el-button type="primary" icon="el-icon-plus" size="small" style="margin-left: 20px" @click="dialogAddVisable=true">新增主机</el-button>
+        <el-button type="primary" icon="el-icon-plus" size="small" style="margin-left: 20px" @click="dialogAddVisable = true">新增主机</el-button>
         <el-button type="success" icon="el-icon-circle-check" size="small" style="margin-left: 20px" @click="dockerCheckClick">容器检测</el-button>
       </div>
 
@@ -18,9 +18,9 @@
 
           <el-table-column type="selection" width="40"></el-table-column>
           <el-table-column prop="host_name" label="主机名称" width="180" align="center"></el-table-column>
-          <el-table-column prop="envir" label="环境所属" width="150" align="center"></el-table-column>
           <el-table-column prop="public_ip" label="公网IP" width="150" align="center"></el-table-column>
           <el-table-column prop="inner_ip" label="内外IP" width="150" align="center"></el-table-column>
+          <el-table-column prop="project" label="项目环境" width="150" align="center"></el-table-column>
           <el-table-column prop="service" label="运行容器" fit align="center">
             <template slot-scope="scope" >
               <div v-for="item in scope.row.services">
@@ -36,12 +36,16 @@
 
             </template>
           </el-table-column>
-          <el-table-column prop="host_status" label="主机状态" width="100" align="center"></el-table-column>
-          <el-table-column prop="create_time" label="更新时间" width="150" align="center"></el-table-column>
-          <el-table-column prop="option" label="操作" width="180" align="center">
+          <el-table-column prop="host_status" label="主机状态" width="100" align="center">
+            <template slot-scope="scope">
+              <el-tag type="success" size="small" style="margin-right: 3px;margin-top: 3px" >{{ scope.row.host_status }}</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="create_time" label="更新时间" width="160" align="center"></el-table-column>
+          <el-table-column prop="option" label="操作" width="170" align="center">
             <template slot-scope="scope">
               <el-button type="text" icon="el-icon-edit" size="small" @click="editClick(scope.row)">编辑</el-button>
-              <el-button type="text" icon="el-icon-delete" size="small" @click="deleteGroupsClick(scope.row)">删除</el-button>
+              <el-button type="text" icon="el-icon-delete" size="small" style="color: #f56c6c" @click="deleteHostClick(scope.row)">删除</el-button>
             </template>
           </el-table-column>
 
@@ -54,6 +58,11 @@
         <el-form :model="addHost"  label-width="130px" width="40%">
           <el-form-item prop="host_name" label="主机名" required style="margin-top: 10px">
             <el-input v-model="addHost.host_name" placeholder="请输入主机名" ></el-input>
+          </el-form-item>
+          <el-form-item prop="project" label="项目环境">
+            <el-select v-model="addHost.project" placeholder="请选择项目环境" style="width: 70%">
+              <el-option v-for="item in project_list" :label="item.project_name" :value="item.id"></el-option>
+            </el-select>
           </el-form-item>
           <el-form-item prop="inner_ip" label="内网IP" required>
             <el-input v-model="addHost.inner_ip" placeholder="请输入内网IP" ></el-input>
@@ -78,6 +87,11 @@
           <el-form-item prop="host_name" label="主机名" required style="margin-top: 10px">
             <el-input v-model="editHost.host_name" placeholder="请输入主机名" ></el-input>
           </el-form-item>
+          <el-form-item prop="project" label="项目环境">
+            <el-select v-model="editHost.project_id" placeholder="请选择项目环境" style="width: 70%">
+              <el-option v-for="item in project_list" :label="item.project_name" :value="item.id"></el-option>
+            </el-select>
+          </el-form-item>
           <el-form-item prop="inner_ip" label="内网IP" required>
             <el-input v-model="editHost.inner_ip" placeholder="请输入内网IP" ></el-input>
           </el-form-item>
@@ -92,7 +106,7 @@
         </el-form>
         <div slot="footer" class="dialog-footer" style="text-align: center">
           <el-button @click="dialogEditVisable = false">取 消</el-button>
-          <el-button type="primary" @click="editGroupsCommit">确 定</el-button>
+          <el-button type="primary" @click="editHostCommit">确 定</el-button>
         </div>
       </el-dialog>
 
@@ -111,7 +125,8 @@
 <script>
 
 import {
-  deleteGroups, editGroups, getGroups
+  addHost,
+  deleteHost, editHost, getHosts, getProject
 } from "@/api";
 
 export default {
@@ -122,13 +137,8 @@ export default {
       dialogEditVisable: false,
       dialogAddVisable: false,
       formLabelWidth: "100px",
-      editGroups: {},
-      groups: [
-        {label: "菜单组", value: "菜单组"},
-        {label: "权限组", value: "权限组"},
-        {label: "部门", value: "部门"},
-      ],
       itemDockerPort: [2375, 32375],
+      project_list: [],
       addHost: {},
       editHost: {},
       params: {page: 1, pagesize: 10, total: 0, search: ""},
@@ -158,7 +168,7 @@ export default {
     }
   },
   created() {
-    // this.fetchData()
+    this.fetchData()
   },
   methods: {
     currentChange(page){
@@ -176,7 +186,7 @@ export default {
       this.dialogAddVisable = false
     },
     async fetchData(){
-      var response = await getGroups(this.params).catch(() => {
+      var response = await getHosts(this.params).catch(() => {
         this.$message({type: 'error', message: "请求错误"})
         return 0
       })
@@ -186,15 +196,25 @@ export default {
         this.tableData = response.data
         this.params.total = response.total
       }
+
+      var response = await getProject(this.params).catch(() => {
+        this.$message({type: 'error', message: "请求错误"})
+        return 0
+      })
+      if (response.code !== 200){
+        this.$message({type: 'warning', message: response.msg})
+      }else {
+        this.project_list = response.data
+      }
       
     },
-    deleteGroupsClick(row) {
-      this.$confirm('是否确认删除 ' + row.group_name + ' 分组?', '提示', {
+    deleteHostClick(row) {
+      this.$confirm('是否确认删除 ' + row.host_name + ' 主机?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
-        var response = await deleteGroups({"id": row.id})
+        var response = await deleteHost({"ids": row.id})
         if (response.code === 200) {
           this.$message({type: 'success', message: '删除成功!'});
           await this.fetchData()
@@ -208,9 +228,11 @@ export default {
 
     editClick(row){
       this.editHost = row
+      console.log(row)
       this.dialogEditVisable = true
     },
     async addHostCommit(){
+      console.log(this.addHost)
       var response = await addHost(this.addHost).catch(() => {
         this.$message({type: "error", message: "请求失败"})
         return 0
@@ -223,8 +245,11 @@ export default {
       this.dialogAddVisable = false
       await this.fetchData()
     },
-    async editGroupsCommit(){
-      var response = await editGroups(this.editGroups).catch(() => {
+    async editHostCommit(){
+      delete this.editHost.create_time
+      delete this.editHost.update_time
+      console.log(this.editHost)
+      var response = await editHost(this.editHost).catch(() => {
         this.$message({type: "error", message: "请求失败"})
         return 0
       })

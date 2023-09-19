@@ -77,31 +77,38 @@ export function deletePlatform(params){
 }
 
 
-export function getDepartment(params){
+export function getHosts(params){
   return axios({
-    url: '/department',
+    url: '/hosts',
     method: 'get',
     params
   })
 }
 
-export function addDepartment(data){
+export function addHost(data){
   return axios({
-    url: '/department',
+    url: '/hosts',
     method: 'post',
     data
   })
 }
 
 
-export function getRoles(params){
+export function editHost(data){
   return axios({
-    url: '/roles',
-    method: 'get',
-    params
+    url: '/hosts',
+    method: 'patch',
+    data
   })
 }
 
+export function deleteHost(params){
+  return axios({
+    url: '/hosts',
+    method: 'delete',
+    params
+  })
+}
 
 export function addRoles(data){
   return axios({
