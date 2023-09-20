@@ -110,25 +110,34 @@ export function deleteHost(params){
   })
 }
 
-export function addRoles(data){
+
+export function getCommonParamTemplate(params){
   return axios({
-    url: '/roles',
+    url: '/pt',
+    method: 'get',
+    params
+  })
+}
+
+export function addCommonParamTemplate(data){
+  return axios({
+    url: '/pt',
     method: 'post',
     data
   })
 }
 
-export function editRoles(data){
+export function editCommonParamTemplate(data){
   return axios({
-    url: '/roles',
+    url: '/pt',
     method: 'patch',
     data
   })
 }
 
-export function deleteRoles(params){
+export function deleteCommonParamTemplate(params){
   return axios({
-    url: '/roles',
+    url: '/pt',
     method: 'delete',
     params
   })

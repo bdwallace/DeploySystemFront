@@ -128,7 +128,7 @@ export const constantRoutes = [
       component: () => import('@/views/templates/serviceTemplate.vue'),
       meta: { title: "服务模板",icon: "iconfont icon-jiaoseguanli" }
     },{
-      path: "create_template",
+      path: "create_template/:id",
       name: "创建参数模板",
       hidden: true,
       component: () => import('@/views/templates/createCommon.vue'),

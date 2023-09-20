@@ -8,27 +8,29 @@
         <el-button type="primary" icon="el-icon-plus" size="small" style="margin-left: 20px" @click="createTemplateCommit">创建模板</el-button>
       </div>
 
-
       <div class="certTable">
         <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark"
           border :header-cell-style="{background:'#eef1f6',color:'#606266'}"
           @selection-change="handleSelectionChange">
 
-
           <el-table-column type="expand">
             <template slot-scope="scope">
               <el-form label-position="left" inline class="demo-table-expand">
-                <el-form-item v-for="(item, key) in scope.row.data" :label="key" align="center"  style="display: block">
-                  <span>{{ item }}</span>
-                </el-form-item>
-                <el-form-item v-for="(item, key) in scope.row.data" :label="key" align="center"  style="display: block">
-                  <span>{{ item }}</span>
-                </el-form-item>
+                <div v-for="item in scope.row.config" style="margin-left: 100px">
+                  <el-form-item  align="center" >
+                    <td align="left" style="width:300px;border-style:none;padding:10px">
+                      <span>{{ item.name }}</span> &emsp;
+                    </td>
+                    <td align="left" style="width: 800px;border-style:none;padding:10px">
+                      <span style="width: 100%">{{ item.content }}</span>
+                    </td>
+                  </el-form-item>
+                </div>
 
               </el-form>
             </template>
           </el-table-column>
-          <el-table-column prop="param_name" label="模板名称" width="150px" align="center"></el-table-column>
+          <el-table-column prop="name" label="模板名称" width="150px" align="center"></el-table-column>
           <el-table-column prop="with_service" label="服务关联" fit align="center">
             <template slot-scope="scope">
               <el-tag size="small" style="margin-right: 3px;margin-top: 5px;" v-for="item in scope.row.with_service">{{ item.name }}</el-tag>
@@ -36,91 +38,16 @@
           </el-table-column>
           <el-table-column prop="create_time" label="创建时间" width="180px" align="center"></el-table-column>
           <el-table-column prop="update_time" label="更新时间" width="180px" align="center"></el-table-column>
-
           <el-table-column label="操作" width="180" align="center" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" icon="el-icon-edit" size="small" @click="editClick(scope.row)">编辑</el-button>
-              <el-button type="text" icon="el-icon-delete" size="small" style="color: #f56c6c" @click="deleteMenuClick(scope.row)">删除</el-button>
-
+              <el-button type="text" icon="el-icon-delete" size="small" style="color: #f56c6c" @click="deleteTempClick(scope.row)">删除</el-button>
             </template>
-
           </el-table-column>
 
         </el-table>
       </div>
 
-
-      <el-dialog title="新增菜单" :visible.sync="dialogVisable" width="50%">
-        <el-form :model="addMenus">
-          <el-form-item label="菜单组" :label-width="formLabelWidth">
-            <el-select v-model="addMenus.menu_group_id" placeholder="请选择菜单组" style="width: 70%">
-              <el-option
-                v-for="item in menu_groups"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="菜单名称" :label-width="formLabelWidth">
-            <el-input v-model="addMenus.menu_name"  placeholder="请输入菜单名称"></el-input>
-          </el-form-item>
-
-          <el-form-item label="菜单地址" :label-width="formLabelWidth">
-            <el-input v-model="addMenus.menu_link"></el-input>
-          </el-form-item>
-          
-          <el-form-item label="菜单图标" :label-width="formLabelWidth">
-            <el-input v-model="addMenus.menu_icon" ></el-input>
-          </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer" style="text-align: center">
-          <el-button @click="dialogVisable = false">取 消</el-button>
-          <el-button type="primary" @click="addMenusCommit">确 定</el-button>
-        </div>
-      </el-dialog>
-
-      <el-dialog title="新增菜单组" :visible.sync="dialogAddVisable" width="35%">
-        <el-form :model="addMenuGroup">
-          <el-form-item label="菜单组名称" :label-width="formLabelWidth">
-            <el-input v-model="addMenuGroup.group_name" style="width: 85%" placeholder="请输入菜单组名称"></el-input>
-          </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer" style="text-align: center">
-          <el-button @click="closeDialog">取 消</el-button>
-          <el-button type="primary" @click="addMenuGroupCommit">确 定</el-button>
-        </div>
-      </el-dialog>
-
-      <el-dialog title="编辑" :visible.sync="dialogEditVisable" width="50%">
-        <el-form :model="editMenus">
-          <el-form-item label="菜单组" :label-width="formLabelWidth">
-            <el-select v-model="editMenus.menu_group_id" placeholder="请选择菜单组" style="width: 70%">
-              <el-option
-                v-for="item in menu_groups"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="菜单名称" :label-width="formLabelWidth">
-            <el-input v-model="editMenus.menus_name"  placeholder="请输入菜单名称"></el-input>
-          </el-form-item>
-
-          <el-form-item label="菜单地址" :label-width="formLabelWidth">
-            <el-input v-model="editMenus.menus_link"></el-input>
-          </el-form-item>
-
-          <el-form-item label="菜单图标" :label-width="formLabelWidth">
-            <el-input v-model="editMenus.menus_icon" ></el-input>
-          </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer" style="text-align: center">
-          <el-button @click="dialogEditVisable = false">取 消</el-button>
-          <el-button type="primary" @click="editMenusCommit">确 定</el-button>
-        </div>
-      </el-dialog>
 
       <div style="padding: 10px 16px;text-align: right;">
         <el-pagination background  layout="total, sizes, prev, pager, next, jumper"
@@ -138,11 +65,9 @@
 import Vue from 'vue';
 import VueClipboard from 'vue-clipboard2';
 import {
-  getMenus,
-  addMenusGroup,
-  getMenusGroup, addMenus, deleteMenus, editMenus
+  getCommonParamTemplate, deleteCommonParamTemplate
 } from "@/api";
-Vue.use(VueClipboard);
+
 export default {
   name: "ParamCommon",
   data() {
@@ -151,17 +76,11 @@ export default {
       dialogEditVisable: false,
       dialogAddVisable: false,
       formLabelWidth: "100px",
-      addMenus: {
-        menu_group_id: "",
-        menu_name: "",
-        menu_link: "",
-        menu_icon: ""
-      },
       editMenus: {},
       menu_groups: [],
       spanArr: [],
       addMenuGroup: {},
-      params: {page: 1, pagesize: 15, total: 0, search: ""},
+      params: {page: 1, pagesize: 15, total: 0, search: "", temp_type: "common"},
       multipleSelection: [],
       projects: [],
       tableData: [
@@ -180,7 +99,7 @@ export default {
     }
   },
   created() {
-    // this.fetchData()
+    this.fetchData()
   },
   methods: {
     currentChange(page){
@@ -198,7 +117,7 @@ export default {
       this.dialogAddVisable = false
     },
     async fetchData(){
-      var response = await getMenus(this.params).catch(() => {
+      var response = await getCommonParamTemplate(this.params).catch(() => {
         this.$message({type: 'error', message: "请求错误"})
         return 0
       })
@@ -207,30 +126,16 @@ export default {
       }else {
         // this.getSpanArr(response.data)
         this.tableData = response.data
-        this.getSpanArr(this.tableData)
         this.params.total = response.total
       }
-
-      var group_data = await getMenusGroup().catch(() => {
-        this.$message({type: 'error', message: "请求错误"})
-        return 0
-      })
-      this.menu_groups = []
-      if (group_data.code !== 200){
-        this.$message({type: 'warning', message: response.msg})
-        return 0
-      }
-      group_data.data.forEach((item) => {
-        this.menu_groups.push({label: item['group_name'], value: item['id']})
-      })
     },
-    deleteMenuClick(row) {
-      this.$confirm('是否确认删除 ' + row.menus_name + ' 菜单?', '提示', {
+    deleteTempClick(row) {
+      this.$confirm('是否确认删除 ' + row.name + ' 参数模板?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
-        var response = await deleteMenus({"id": row.id})
+        var response = await deleteCommonParamTemplate({"ids": row.id})
         if (response.code === 200) {
           this.$message({type: 'success', message: '删除成功!'});
           await this.fetchData()
@@ -241,59 +146,11 @@ export default {
         this.$message({type: 'info', message: '已取消删除'});
       })
     },
-
     editClick(row){
-      this.editMenus = row
-      this.dialogEditVisable = true
-    },
-    async addMenusCommit(){
-      var response = await addMenus(this.addMenus).catch(() => {
-        this.$message({type: 'error', message: '请求失败'})
-        return 0
-      })
-      if (response.code !== 200){
-        this.$message({type: "error", message: response.msg})
-      } else {
-        this.$message({type: "success", message: response.msg})
-      }
-      this.dialogVisable = false
-      await this.fetchData()
-
-    },
-    async addMenuGroupCommit(){
-      var response = await addMenusGroup(this.addMenuGroup).catch(() => {
-        this.$message({type: "error", message: "请求失败"})
-        return 0
-      })
-      if (response.code !== 200){
-        this.$message({type: "error", message: response.msg})
-      } else {
-        this.$message({type: "success", message: response.msg})
-      }
-      this.dialogAddVisable = false
-      await this.fetchData()
-    },
-    async editMenusCommit(){
-      var response = await editMenus(this.editMenus).catch(() => {
-        this.$message({type: "error", message: "请求失败"})
-        return 0
-      })
-      if (response.code !== 200){
-        this.$message({type: "error", message: response.msg})
-      } else {
-        this.$message({type: "success", message: response.msg})
-      }
-      this.dialogEditVisable = false
-      await this.fetchData()
-    },
-    copy(e) {
-      this.$message({
-        message: "复制成功!",
-        type: 'success'
-      })
+      this.$router.push('/templates/create_template/' + row.id);
     },
     createTemplateCommit() {
-      this.$router.push('/templates/create_template');
+      this.$router.push('/templates/create_template/0');
     }
   }
 }
@@ -346,5 +203,8 @@ export default {
   background-color: #fff;
 }
 
+/deep/ .el-form-item__content {
+  line-height: 10px;
+}
 
 </style>

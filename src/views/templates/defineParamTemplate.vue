@@ -16,10 +16,10 @@
           @selection-change="handleSelectionChange">
 
           <el-table-column type="selection" width="40"></el-table-column>
-          <el-table-column prop="template_name" label="模板名称" width="300" align="center"></el-table-column>
-          <el-table-column prop="param_list" label="参数内容" fit align="center">
+          <el-table-column prop="name" label="模板名称" width="300" align="center"></el-table-column>
+          <el-table-column prop="config" label="参数内容" fit align="center">
             <template slot-scope="scope">
-              <el-tag size="mini" v-for="item in scope.row.param_list" style="margin-right: 3px">{{ item.value }}</el-tag>
+              <el-tag size="mini" v-for="item in scope.row.config" style="margin-right: 3px">{{ item.value }}</el-tag>
             </template>
           </el-table-column>
           <el-table-column prop="with_service" label="服务关联" fit align="center">
@@ -32,7 +32,7 @@
           <el-table-column label="操作" width="180" align="center" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" icon="el-icon-edit" size="small" @click="editClick(scope.row)">编辑</el-button>
-              <el-button type="text" icon="el-icon-delete" size="small" style="color: #f56c6c" @click="deleteApiClick(scope.row)">删除</el-button>
+              <el-button type="text" icon="el-icon-delete" size="small" style="color: #f56c6c" @click="deleteTemplateClick(scope.row)">删除</el-button>
 
             </template>
 
@@ -44,10 +44,10 @@
       <el-dialog title="创建模板" :visible.sync="dialogAddVisable" width="50%">
         <el-form :model="formData">
           <el-form-item label="模板名称" :label-width="formLabelWidth">
-            <el-input v-model="formData.template_name" style="width: 85%" placeholder="请输入模板名称"></el-input>
+            <el-input v-model="formData.name" style="width: 85%" placeholder="请输入模板名称"></el-input>
           </el-form-item>
 
-          <el-form-item label="自定义参数" :label-width="formLabelWidth" v-for="(item, index) in formData.param_list">
+          <el-form-item label="自定义参数" :label-width="formLabelWidth" v-for="(item, index) in formData.config">
             <el-input v-model="item.value" placeholder="请输入自定义参数" style="width: 75%"></el-input>
             <el-button type="warning" size="mini" style="margin-left: 5px" @click.prevent="removeParams(item)" icon="el-icon-delete">删除</el-button>
 
@@ -64,20 +64,19 @@
       <el-dialog title="编辑" :visible.sync="dialogEditVisable" width="50%">
         <el-form :model="editData">
           <el-form-item label="模板名称" :label-width="formLabelWidth">
-            <el-input v-model="editData.template_name" style="width: 85%" placeholder="请输入模板名称"></el-input>
+            <el-input v-model="editData.name" style="width: 85%" placeholder="请输入模板名称"></el-input>
           </el-form-item>
 
-          <el-form-item label="自定义参数" :label-width="formLabelWidth" v-for="(item, index) in editData.param_list">
+          <el-form-item label="自定义参数" :label-width="formLabelWidth" v-for="(item, index) in editData.config">
             <el-input v-model="item.value" placeholder="请输入自定义参数" style="width: 75%"></el-input>
             <el-button type="warning" size="mini" style="margin-left: 5px" @click.prevent="removeEditParams(item)" icon="el-icon-delete">删除</el-button>
-
           </el-form-item>
 
         </el-form>
         <div slot="footer" class="dialog-footer" style="text-align: center">
-          <el-button @click="dialogAddVisable=false">取 消</el-button>
+          <el-button @click="dialogEditVisable=false">取 消</el-button>
           <el-button type="primary" icon="el-icon-plus" @click="addEditParams">添加</el-button>
-          <el-button type="primary" @click="addTemplateCommit">确 定</el-button>
+          <el-button type="primary" @click="editTemplateCommit">确 定</el-button>
         </div>
       </el-dialog>
 
@@ -97,48 +96,50 @@
 <script>
 
 import {
-  getApis, getApiGroup, addApiGroup, addApis, deleteApis, editApis
+  deleteApis,
+  addCommonParamTemplate,
+  getCommonParamTemplate,
+  editCommonParamTemplate, deleteCommonParamTemplate
 } from "@/api";
 
 export default {
-  name: "domain_manage",
+  name: "DefineParamTemplate",
   data() {
     return {
       dialogAddVisable: false,
-      dialogAddApiVisable: false,
       dialogEditVisable: false,
       formLabelWidth: "100px",
       api_groups: [],
       input: {},
-      params: {page: 1, pagesize: 15, total: 0, search: ""},
+      params: {page: 1, pagesize: 15, total: 0, search: "", temp_type: 'define'},
       multipleSelection: [],
       projects: [],
       formData: {
-        param_list: [{}],
-        template_name: ""
+        config: [{}],
+        name: "",
+        temp_type: "define",
       },
       editData: {
-        param_list: [{}],
-        template_name: ""
+        config: [{}],
+        name: ""
       },
       tableData: [
-        {template_name: "zuul参数模板", param_list:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
-        {template_name: "eureka参数模板", param_list:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
-        {template_name: "config_remoteservice_provider参数模板", param_list:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
-        {template_name: "lottery_api参数模板", param_list:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
-        {template_name: "config_timer参数模板", param_list:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
-        {template_name: "lottery_risk参数模板", param_list:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
-        {template_name: "HK-azkaijiang-akbet参数模板", param_list:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
-        {template_name: "kaijiang_6hao参数模板", param_list:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
+        {name: "zuul参数模板", config:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
+        {name: "eureka参数模板", config:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
+        {name: "config_remoteservice_provider参数模板", config:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
+        {name: "lottery_api参数模板", config:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
+        {name: "config_timer参数模板", config:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
+        {name: "lottery_risk参数模板", config:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
+        {name: "HK-azkaijiang-akbet参数模板", config:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
+        {name: "kaijiang_6hao参数模板", config:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
 
       ]
     }
   },
   created() {
-    // this.fetchData()
+    this.fetchData()
   },
   methods: {
-
     currentChange(page){
       this.params.page = page
       this.fetchData()
@@ -151,7 +152,7 @@ export default {
       this.multipleSelection = val
     },
     async fetchData(){
-      var response = await getApis(this.params).catch(() => {
+      var response = await getCommonParamTemplate(this.params).catch(() => {
         this.$message({type: 'error', message: "请求错误"})
         return 0
       })
@@ -164,13 +165,13 @@ export default {
       }
     },
 
-    deleteApiClick(row) {
-      this.$confirm('是否确认删除 ' + row.api_url + ' 路由权限?', '提示', {
+    deleteTemplateClick(row) {
+      this.$confirm('是否确认删除 ' + row.name + ' 参数模板?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
-        var response = await deleteApis({"id": row.id})
+        var response = await deleteCommonParamTemplate({"ids": row.id})
         if (response.code === 200) {
           this.$message({type: 'success', message: '删除成功!'});
           await this.fetchData()
@@ -183,12 +184,11 @@ export default {
     },
 
     editClick(row){
-      console.log(row)
       this.editData = row
       this.dialogEditVisable = true
     },
-    async editApiCommit(){
-      var response = await editApis(this.editData).catch(() => {
+    async editTemplateCommit(){
+      var response = await editCommonParamTemplate(this.editData).catch(() => {
         this.$message({type: "error", message: "请求失败"})
         return 0
       })
@@ -201,7 +201,8 @@ export default {
       await this.fetchData()
     },
     async addTemplateCommit(){
-      var response = await addApiGroup(this.addApiGroup).catch(() => {
+      // console.log(this.formData)
+      var response = await addCommonParamTemplate(this.formData).catch(() => {
         this.$message({type: "error", message: "请求失败"})
         return 0
       })
@@ -214,28 +215,29 @@ export default {
       await this.fetchData()
     },
     removeParams(item) {
-      var index = this.formData.param_list.indexOf(item)
+      var index = this.formData.config.indexOf(item)
       if (index !== -1) {
-        this.formData.param_list.splice(index, 1)
+        this.formData.config.splice(index, 1)
       }
     },
     addParams() {
-      this.formData.param_list.push({
+      this.formData.config.push({
         value: '',
         key: Date.now()
       });
     },
     removeEditParams(item) {
-      var index = this.editData.param_list.indexOf(item)
+      var index = this.editData.config.indexOf(item)
       if (index !== -1) {
-        this.editData.param_list.splice(index, 1)
+        this.editData.config.splice(index, 1)
       }
     },
     addEditParams() {
-      this.editData.param_list.push({
+      this.editData.config.push({
         value: '',
         key: Date.now()
       });
+      console.log(this.editData)
     },
 
   }

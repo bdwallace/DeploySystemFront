@@ -22,7 +22,7 @@
               <el-tag v-for="item in scope.row.platforms" size="mini" style="margin-right: 3px">{{ item }}</el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="envir" label="所属环境" fit align="center"></el-table-column>
+          <el-table-column prop="project" label="项目环境" fit align="center"></el-table-column>
           <el-table-column prop="domain_svc_type" label="域名服务类型" fit align="center"></el-table-column>
           <el-table-column prop="is_montior" label="是否监控" fit align="center"></el-table-column>
           <el-table-column prop="is_speed" label="是否加速" fit align="center"></el-table-column>
@@ -33,9 +33,6 @@
             </template>
           </el-table-column>
           <el-table-column prop="remark" label="备注" fit align="center"></el-table-column>
-<!--          <el-table-column prop="create_time" label="创建时间" fit align="center"></el-table-column>-->
-<!--          <el-table-column prop="update_time" label="更新时间" fit align="center"></el-table-column>-->
-          <!--          <el-table-column prop="remark" label="备注" fit align="center"></el-table-column>-->
           <el-table-column label="操作" width="180" align="center" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" icon="el-icon-edit" size="mini" @click="editClick(scope.row)">编辑</el-button>
@@ -67,7 +64,7 @@
 export default {
   // eslint-disable-next-line vue/multi-word-compone
   // nt-names
-  name: 'Platform',
+  name: 'Domains',
   data() {
     return {
       params: {page: 1, pagesize: 15, total: 0, search: ""},
