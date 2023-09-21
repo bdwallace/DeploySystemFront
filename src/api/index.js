@@ -144,34 +144,34 @@ export function deleteCommonParamTemplate(params){
 }
 
 
-export function getGroups(params){
+export function getDomain(params){
   return axios({
-    url: '/groups',
+    url: '/domain',
     method: 'get',
     params
   })
 }
 
 
-export function addGroups(data){
+export function addDomain(data){
   return axios({
-    url: '/groups',
+    url: '/domain',
     method: 'post',
     data
   })
 }
 
-export function editGroups(data){
+export function editDomain(data){
   return axios({
-    url: '/groups',
+    url: '/domain',
     method: 'patch',
     data
   })
 }
 
-export function deleteGroups(params){
+export function deleteDomain(params){
   return axios({
-    url: '/groups',
+    url: '/domain',
     method: 'delete',
     params
   })

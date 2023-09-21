@@ -48,7 +48,6 @@
         </el-table>
       </div>
 
-
       <div style="padding: 10px 16px;text-align: right;">
         <el-pagination background  layout="total, sizes, prev, pager, next, jumper"
                      :page-size="params.pagesize" :page-sizes="[10,30,50,100]"
@@ -62,8 +61,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import VueClipboard from 'vue-clipboard2';
 import {
   getCommonParamTemplate, deleteCommonParamTemplate
 } from "@/api";

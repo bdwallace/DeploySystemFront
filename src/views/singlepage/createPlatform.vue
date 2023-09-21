@@ -54,7 +54,7 @@
         </el-form-item>
       </el-form>
 
-      <el-button type="primary" @click="createTemplateCommit('create')" v-if="id===0">立即提交</el-button>
+      <el-button type="primary" @click="createTemplateCommit('create')" v-if="id==='0'">立即提交</el-button>
       <el-button type="primary" @click="createTemplateCommit('update')" v-else>立即提交</el-button>
       <el-button @click="$router.back()">取消</el-button>
     </div>
@@ -88,6 +88,10 @@ export default {
   },
   methods: {
     async fetchData() {
+
+      if (this.$route.params.id === '0'){
+        return
+      }
       this.params.search = this.$route.params.id
       var resp = await getPlatform(this.params).catch(() => {
         this.$message({type: 'error', message: "请求错误"})

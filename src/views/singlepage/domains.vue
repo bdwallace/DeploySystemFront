@@ -17,14 +17,14 @@
 
           <el-table-column type="selection" width="40"></el-table-column>
           <el-table-column prop="domain" label="域名" fit align="center"></el-table-column>
-          <el-table-column prop="platforms" label="所属平台" fit align="center">
+          <el-table-column prop="platform" label="所属平台" fit align="center">
             <template slot-scope="scope">
-              <el-tag v-for="item in scope.row.platforms" size="mini" style="margin-right: 3px">{{ item }}</el-tag>
+              <el-tag v-for="item in scope.row.platform" size="mini" style="margin-right: 3px">{{ item }}</el-tag>
             </template>
           </el-table-column>
           <el-table-column prop="project" label="项目环境" fit align="center"></el-table-column>
-          <el-table-column prop="domain_svc_type" label="域名服务类型" fit align="center"></el-table-column>
-          <el-table-column prop="is_montior" label="是否监控" fit align="center"></el-table-column>
+          <el-table-column prop="domain_type" label="域名服务类型" fit align="center"></el-table-column>
+          <el-table-column prop="is_monitor" label="是否监控" fit align="center"></el-table-column>
           <el-table-column prop="is_speed" label="是否加速" fit align="center"></el-table-column>
           <el-table-column prop="cert" label="证书" fit align="center">
             <template slot-scope="scope">
@@ -61,6 +61,8 @@
 
 <script>
 
+import {deleteDomain, deletePlatform, getDomain} from "@/api";
+
 export default {
   // eslint-disable-next-line vue/multi-word-compone
   // nt-names
@@ -70,12 +72,12 @@ export default {
       params: {page: 1, pagesize: 15, total: 0, search: ""},
       dialogCreatePlatformVisable: false,
       tableData: [
-        {domain: "u8-pre.one2.cc", domain_svc_type: "H5", platforms: ["预生产3300-U8","测试3300-U8"], is_montior: "是", is_speed: "是", envir: "预生产"},
-        {domain: "bet123p.com", domain_svc_type: "H5", platforms: ["预生产3300-U8"], is_montior: "是", is_speed: "是", envir: "预生产"},
-        {domain: "bet123q.com", domain_svc_type: "H5", platforms: ["预生产3300-U8"], is_montior: "是", is_speed: "是", envir: "预生产"},
-        {domain: "bet123r.com", domain_svc_type: "H5", platforms: ["预生产3300-U8"], is_montior: "是", is_speed: "是", envir: "预生产"},
-        {domain: "prebrl.bet123.io", domain_svc_type: "H5", platforms: ["预生产3300-U8"], is_montior: "是", is_speed: "是", envir: "预生产"},
-        {domain: "rico77.one2.cc", domain_svc_type: "H5", platforms: ["预生产3300-U8"], is_montior: "是", is_speed: "是", envir: "预生产"}
+        {domain: "u8-pre.one2.cc", domain_svc_type: "H5", platform: ["预生产3300-U8","测试3300-U8"], is_montior: "是", is_speed: "是", project: "预生产"},
+        {domain: "bet123p.com", domain_svc_type: "H5", platform: ["预生产3300-U8"], is_montior: "是", is_speed: "是", project: "预生产"},
+        {domain: "bet123q.com", domain_svc_type: "H5", platform: ["预生产3300-U8"], is_montior: "是", is_speed: "是", project: "预生产"},
+        {domain: "bet123r.com", domain_svc_type: "H5", platform: ["预生产3300-U8"], is_montior: "是", is_speed: "是", project: "预生产"},
+        {domain: "prebrl.bet123.io", domain_svc_type: "H5", platform: ["预生产3300-U8"], is_montior: "是", is_speed: "是", project: "预生产"},
+        {domain: "rico77.one2.cc", domain_svc_type: "H5", platform: ["预生产3300-U8"], is_montior: "是", is_speed: "是", project: "预生产"}
       ],
     }
   },
@@ -96,13 +98,35 @@ export default {
       this.multipleSelection = val
     },
     async fetchData() {
-
+      var resp = await getDomain(this.params).catch(() => {
+        this.$message({type: 'error', message: "请求错误"})
+        return 0
+      })
+      if (resp.code !== 200){
+        this.$message({type: 'warning', message: resp.msg})
+        return 0
+      }else {
+        this.tableData = resp.data
+        // this.params.total = resp.total
+      }
     },
     addDomainClick(){
       this.$router.push('/sg/adddomain/0')
     },
     editClick(row){
-      this.$router.push('/sg/adddomain/ftdsdf21yu1')
+      this.$router.push('/sg/adddomain/' + row.id)
+    },
+    async deleteDomainClick(row){
+      var response = await deleteDomain({"ids": row.id}).catch(() => {
+        this.$message({type: 'error', message: "请求错误"})
+        return 0
+      })
+      if (response.code !== 200){
+        this.$message({type: 'warning', message: response.msg})
+      }else {
+        this.$message({type: 'success', message: response.msg})
+      }
+      await this.fetchData()
     }
   }
 }

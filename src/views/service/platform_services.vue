@@ -252,7 +252,7 @@ export default {
     },
     helthCheckClick(){
       this.tableData.forEach((item) => {
-        console.log(item)
+        // console.log(item)
         item.servers.forEach((server) => {
           server.health = "200"
           server.run_time = 'Up 7 weeks'
