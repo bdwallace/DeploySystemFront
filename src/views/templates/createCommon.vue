@@ -61,7 +61,7 @@
       </el-form>
 
       <el-button type="primary" @click="createTemplateCommit('create')" v-if="id==='0'">立即提交</el-button>
-      <el-button type="primary" @click="createTemplateCommit('update')" v-else>立即提交</el-button>
+      <el-button type="primary" @click="createTemplateCommit('update')" v-else>更新模板</el-button>
       <el-button @click="$router.back()">取消</el-button>
     </div>
   </el-container>
@@ -85,7 +85,7 @@ export default {
       params: {page: 1, pagesize: 15, total: 0, search: ""},
       itemDockerPort: [2375, 32375],
       on_submit_loading: false,
-      id: this.$route.params,
+      id: this.$route.params.id,
       services: [
         {label: "zuul", key: "zuul"}, {label: "lottery_api", key: "lottery_api"}, {label: "lottery_remoteservice_provider", key: "lottery_remoteservice_provider"},
         {label: "lottery_admin_api", key: "lottery_admin_api"}, {label: "eureka", key: "eureka"}, {label: "config_task", key: "config_task"},
@@ -105,6 +105,9 @@ export default {
   },
   methods: {
     async fetchData() {
+      if (this.$route.params.id === '0'){
+        return
+      }
       this.params.search = this.$route.params.id
       var response = await getCommonParamTemplate(this.params).catch(() => {
         this.$message({type: 'error', message: "请求错误"})

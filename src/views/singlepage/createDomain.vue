@@ -157,7 +157,6 @@ export default {
 
     add_value() {
       this.formData.params.push({name: "", content: ""})
-
       //可以强制重新渲染页面
       // this.$forceUpdate();
     },
@@ -167,7 +166,7 @@ export default {
       formdata.append('crt', this.uploadData.crt)
       formdata.append('key', this.uploadData.key)
       formdata.append("data", JSON.stringify(this.formData))
-      console.log(formdata)
+      // console.log(formdata)
       if (commit_type === "create"){
         var response = await addDomain(formdata).catch(() => {
           this.$message({type: 'error', message: "请求错误"})

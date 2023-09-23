@@ -17,16 +17,16 @@
           @selection-change="handleSelectionChange" >
 
           <el-table-column type="selection" width="40"></el-table-column>
-          <el-table-column prop="service_name" label="服务名称" width="150" align="center"></el-table-column>
+          <el-table-column prop="svc_name" label="服务名称" width="150" align="center"></el-table-column>
           <el-table-column prop="platform" label="平台所属" width="150" align="center"></el-table-column>
-          <el-table-column prop="envir" label="项目环境" width="120" align="center"></el-table-column>
-          <el-table-column prop="ports" label="端口" width="90px"  align="center"></el-table-column>
-          <el-table-column prop="host" label="主机" fit align="center">
+          <el-table-column prop="project" label="项目环境" width="120" align="center"></el-table-column>
+          <el-table-column prop="svc_port" label="端口" width="100px"  align="center"></el-table-column>
+          <el-table-column prop="servers" label="主机" fit align="center">
             <template slot-scope="scope">
               <div v-for="item in scope.row.servers">
                 <el-tag size="small" style="margin-right: 3px;width: 110px;margin-top: 3px" >{{ item.public_ip }}</el-tag>
                 <el-tag size="small" style="margin-right: 3px;width: 110px" type="info">{{ item.inner_ip }}</el-tag>
-                <el-tag size="small" style="margin-right: 3px;width: 83px" v-if="item.run_time==='未知'" type="warning" >{{ item.run_time }}</el-tag>
+                <el-tag size="small" style="margin-right: 3px;width: 83px" v-if="item.run_time==='未知' || item.run_time===''" type="warning" >未知</el-tag>
                 <el-tag size="small" style="margin-right: 3px;" v-else>{{ item.run_time }}</el-tag>
                 <el-tooltip effect="light" content="http://54.179.119.160:8134/login" placement="left" style="margin-right: 5px">
                   <el-tag v-if="item.health==='200'" size="small" type="success" >健康</el-tag>
@@ -38,10 +38,10 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="run_version" label="运行版本" width="240px" align="center">
-            <template slot-scope="scope">
-              {{scope.row.servers[0].run_version}}
-            </template>
+          <el-table-column prop="run_tag" label="运行版本" width="240px" align="center">
+<!--            <template slot-scope="scope">-->
+<!--              {{scope.row.servers[0].run_tag}}-->
+<!--            </template>-->
           </el-table-column>
           <el-table-column prop="online" label="上下线" width="75px" align="center">
             <template scope="scope">
@@ -64,52 +64,14 @@
             <template slot-scope="scope">
               <el-button type="text" icon="el-icon-s-promotion" size="small" @click="deployClick(scope.row)">发布</el-button>
               <el-button type="text" icon="el-icon-edit" size="small" @click="editClick(scope.row)">编辑</el-button>
-              <el-button type="text" icon="el-icon-delete" size="small" style="color: #f56c6c" @click="deleteUserClick(scope.row)">删除</el-button>
+              <el-button type="text" icon="el-icon-delete" size="small" style="color: #f56c6c" @click="deleteServiceClick(scope.row)">删除</el-button>
+
             </template>
+
           </el-table-column>
 
         </el-table>
       </div>
-
-
-
-      <el-dialog title="编辑" :visible.sync="dialogEditVisable" width="50%">
-        <el-form :model="editData">
-          <el-form-item label="用户名" :label-width="formLabelWidth">
-            <el-input v-model="editData.user_name" disabled style="width: 85%" placeholder="一行一个"></el-input>
-          </el-form-item>
-          <el-form-item label="邮箱" :label-width="formLabelWidth" >
-            <el-input v-model="editData.email" placeholder="请输入邮箱" style="width: 85%"></el-input>
-          </el-form-item>
-
-          <el-form-item label="部门" :label-width="formLabelWidth">
-            <el-select v-model="editData.department" placeholder="请选择部门" style="width: 85%">
-              <el-option
-                v-for="item in departments"
-                :key="item.value"
-                :label="item.label"
-                :value="item.label">
-              </el-option>
-            </el-select>
-          </el-form-item>
-
-          <el-form-item label="角色" :label-width="formLabelWidth">
-            <el-select v-model="editData.role" placeholder="请选择角色" style="width: 85%">
-              <el-option
-                v-for="item in role_groups"
-                :key="item.value"
-                :label="item.label"
-                :value="item.label">
-              </el-option>
-            </el-select>
-          </el-form-item>
-
-        </el-form>
-        <div slot="footer" class="dialog-footer" style="text-align: center">
-          <el-button @click="dialogEditVisable = false">取 消</el-button>
-          <el-button type="primary" @click="editUserCommit">确 定</el-button>
-        </div>
-      </el-dialog>
 
 
       <div style="padding: 10px 16px;text-align: right;">
@@ -127,11 +89,11 @@
 <script>
 
 import {
- getUsers, deleteUsers, updateUser, editUsers
+  getUsers, deleteUsers, updateUser, editUsers, getService, deleteService
 } from "@/api";
 
 export default {
-  name: "PlatformServices",
+  name: "Services",
   data() {
     return {
       dialogVisable: false,
@@ -143,42 +105,27 @@ export default {
       editData: {},
       role_groups:[],
       departments: [],
-      params: {page: 1, pagesize: 15, total: 0, search: ""},
+      params: {page: 1, pagesize: 15, total: 0, search: "", position: "平台服务"},
       multipleSelection: [],
       projects: [],
       tableData: [
-        {service_name: "share_agent_6hao", envir: "预生产", ports: "8117:8117", deploy_time: "2023-9-12 12:00:00", platform: "预生产3300-U8", servers: [
-          {public_ip: "152.221.175.184", inner_ip: "172.166.107.254",run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"}],
-        },
-        {service_name: "download_6hao_2", envir: "预生产", ports: "8117:8117", deploy_time: "2023-9-12 12:00:00", platform: "Pre-桑巴舞-3302", servers: [
-          {public_ip: "52.221.75.184", inner_ip: "172.166.97.254",run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"},
-          {public_ip: "18.136.78.64",inner_ip: "172.166.97.172", run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"}],
-        },
-        {service_name: "customer_6hao", envir: "预生产", ports: "8117:8117", deploy_time: "2023-9-12 12:00:00", platform: "aozhou_kaijiang", servers: [
-          {public_ip: "52.221.75.184", inner_ip: "172.166.97.254",run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"},
-          {public_ip: "18.136.78.64",inner_ip: "172.166.97.172", run_version: "RLS_LOTTERY_20230904_01", health: "200", run_time: "Up 37 hours", online: "上线"},
-          {public_ip: "18.136.78.59",inner_ip: "172.166.97.68", run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"},],
-        },
-          {service_name: "agent_6hao", envir: "预生产", ports: "8117:8117", deploy_time: "2023-9-12 12:00:00", platform: "aozhou_kaijiang", servers: [
-          {public_ip: "52.221.75.184", inner_ip: "172.166.97.254",run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"},
-          {public_ip: "18.136.78.64",inner_ip: "172.166.97.172", run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"}],
-        },
-          {service_name: "merchant_6hao", envir: "预生产", ports: "8117:8117", deploy_time: "2023-9-12 12:00:00", platform: "aozhou_kaijiang", servers: [
-          {public_ip: "52.221.75.184", inner_ip: "172.166.97.254",run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"},
-          {public_ip: "18.136.78.64",inner_ip: "172.166.97.172", run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"}],
-        },
-          {service_name: "chat-backend-6hao", envir: "预生产", ports: "8117:8117", deploy_time: "2023-9-12 12:00:00", platform: "Pre-桑巴舞-3302", servers: [
-          {public_ip: "18.136.78.64",inner_ip: "172.166.97.172", run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"}],
-        },
-          {service_name: "sedie_6hao", envir: "预生产", ports: "8117:8117", deploy_time: "2023-9-12 12:00:00", platform: "Pre-桑巴舞-3302", servers: [
-          {public_ip: "52.221.75.184", inner_ip: "172.166.97.254",run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"},
-          {public_ip: "18.136.78.64",inner_ip: "172.166.97.172", run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"}],
-        },
+        // {service_name: "zuul", envir: "预生产", ports: "8117:8117", deploy_time: "2023-9-12 12:00:00", platform: "6hao", servers: [
+        //   {public_ip: "152.221.175.184", inner_ip: "172.166.107.254",run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"}],
+        // },
+        // {service_name: "config_api", envir: "预生产", ports: "8117:8117", deploy_time: "2023-9-12 12:00:00", platform: "aozhou_kaijiang", servers: [
+        //   {public_ip: "52.221.75.184", inner_ip: "172.166.97.254",run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"},
+        //   {public_ip: "18.136.78.64",inner_ip: "172.166.97.172", run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"}],
+        // },
+        // {service_name: "lottery_api", envir: "预生产", ports: "8117:8117", deploy_time: "2023-9-12 12:00:00", platform: "8号", servers: [
+        //   {public_ip: "52.221.75.184", inner_ip: "172.166.97.254",run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"},
+        //   {public_ip: "18.136.78.64",inner_ip: "172.166.97.172", run_version: "RLS_LOTTERY_20230904_01", health: "200", run_time: "Up 37 hours", online: "上线"},
+        //   {public_ip: "18.136.78.59",inner_ip: "172.166.97.68", run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"},],
+        // },
       ]
     }
   },
   created() {
-    // this.fetchData()
+    this.fetchData()
   },
   methods: {
     currentChange(page){
@@ -193,7 +140,7 @@ export default {
       this.multipleSelection = val
     },
     async fetchData(){
-      var resp = await getUsers(this.params).catch(() => {
+      var resp = await getService(this.params).catch(() => {
         this.$message({type: 'error', message: "请求错误"})
         return 0
       })
@@ -207,13 +154,13 @@ export default {
 
 
     },
-    deleteUserClick(row) {
-      this.$confirm('是否确认删除 ' + row.user_name+ ' 用户?', '提示', {
+    deleteServiceClick(row) {
+      this.$confirm('是否确认删除 ' + row.svc_name + ' 服务?', '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
-        var response = await deleteUsers({"id": row.id})
+        var response = await deleteService({"ids": row.id})
         if (response.code === 200) {
           this.$message({type: 'success', message: response.msg});
           await this.fetchData()
@@ -236,7 +183,7 @@ export default {
     },
     editClick(row){
       this.editData = row
-      this.$router.push('/services/cs/' + row.service_name)
+      this.$router.push('/services/cs/' + row.id)
     },
     createService(){
       this.$router.push('/services/cs/0')
@@ -252,11 +199,12 @@ export default {
     },
     helthCheckClick(){
       this.tableData.forEach((item) => {
-        // console.log(item)
+        console.log(item)
         item.servers.forEach((server) => {
           server.health = "200"
           server.run_time = 'Up 7 weeks'
         })
+
       })
     },
     deployClick(row){
@@ -269,6 +217,7 @@ export default {
     closeClick(item){
 
     }
+
 
   }
 }
@@ -306,6 +255,8 @@ export default {
 .input-with-select .el-input-group__prepend {
   background-color: #fff;
 }
+
+
 
 
 

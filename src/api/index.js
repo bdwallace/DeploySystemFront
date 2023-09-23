@@ -179,34 +179,34 @@ export function deleteDomain(params){
 
 
 
-export function getMenus(params){
+export function getService(params){
   return axios({
-    url: '/menus',
+    url: '/service',
     method: 'get',
     params: params
   })
 }
 
 
-export function addMenus(data){
+export function addService(data){
   return axios({
-    url: '/menus',
+    url: '/service',
     method: 'post',
     data
   })
 }
 
-export function editMenus(params){
+export function editService(data){
   return axios({
-    url: '/menus',
-    method: 'put',
-    params
+    url: '/service',
+    method: 'patch',
+    data
   })
 }
 
-export function deleteMenus(params){
+export function deleteService(params){
   return axios({
-    url: '/menus',
+    url: '/service',
     method: 'delete',
     params
   })
