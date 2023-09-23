@@ -6,7 +6,7 @@
           <el-button type="primary" slot="append" icon="el-icon-search" @click="fetchData">搜索</el-button>
         </el-input>
         <el-button type="primary" icon="el-icon-plus" size="small" style="margin-left: 20px" @click="createTemplateClick">新增模板</el-button>
-        <el-button type="primary" icon="el-icon-plus" size="small" style="margin-left: 20px" @click="createServiceClick">创建服务</el-button>
+<!--        <el-button type="primary" icon="el-icon-plus" size="small" style="margin-left: 20px" @click="createServiceClick">创建服务</el-button>-->
       </div>
 
       <div class="certTable">
@@ -33,7 +33,7 @@
           <el-table-column label="操作" width="180" align="center" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" icon="el-icon-edit" size="small" @click="editClick(scope.row)">编辑</el-button>
-              <el-button type="text" icon="el-icon-delete" size="small" style="color: #f56c6c" @click="deleteDomainClick(scope.row)">删除</el-button>
+              <el-button type="text" icon="el-icon-delete" size="small" style="color: #f56c6c" @click="deleteServiceTempClick(scope.row)">删除</el-button>
             </template>
           </el-table-column>
 
@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import {getServiceTemplate} from "@/api";
+import {deleteCommonParamTemplate, deleteService, getServiceTemplate} from "@/api";
 
 
 export default {
@@ -113,6 +113,23 @@ export default {
     },
     createServiceClick(){
 
+    },
+    deleteServiceTempClick(row){
+      this.$confirm('是否确认删除 ' + row.template_name + ' 参数模板?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        var response = await deleteService({"ids": row.id})
+        if (response.code === 200) {
+          this.$message({type: 'success', message: '删除成功!'});
+          await this.fetchData()
+        } else {
+          this.$message({type: 'error', message: '删除失败'});
+        }
+      }).catch(() => {
+        this.$message({type: 'info', message: '已取消删除'});
+      })
     }
   }
 }

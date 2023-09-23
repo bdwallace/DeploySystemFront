@@ -6,7 +6,7 @@
           <el-input type="textarea" v-model="formData.domain" placeholder="一行一个域名" ></el-input>
         </el-form-item>
 
-        <el-form-item prop="project" label="项目环境" label-width="120px" required style="margin-top: 10px">
+        <el-form-item prop="project" label="项目环境" label-width="120px" style="margin-top: 10px">
           <el-select v-model="formData.project" placeholder="请选择项目环境" style="width: 100%">
             <el-option v-for='item in projects' :label="item.project_name" :value="item.id"></el-option>
           </el-select>

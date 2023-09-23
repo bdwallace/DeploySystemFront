@@ -31,7 +31,7 @@
             </template>
           </el-table-column>
           <el-table-column prop="name" label="模板名称" width="150px" align="center"></el-table-column>
-          <el-table-column prop="services" label="服务关联" fit align="center">
+          <el-table-column prop="services" label="服务关联(包含服务模板)" fit align="center">
             <template slot-scope="scope">
               <el-tag size="small" style="margin-right: 3px;margin-top: 5px;" v-for="item in scope.row.services">{{ item.svc_name }}</el-tag>
             </template>

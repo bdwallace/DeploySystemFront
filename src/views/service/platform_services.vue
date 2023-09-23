@@ -18,7 +18,11 @@
 
           <el-table-column type="selection" width="40"></el-table-column>
           <el-table-column prop="svc_name" label="服务名称" width="150" align="center"></el-table-column>
-          <el-table-column prop="platform" label="平台所属" width="150" align="center"></el-table-column>
+          <el-table-column prop="platform" label="平台所属" width="150" align="center">
+            <template slot-scope="scope">
+              <el-tag  size="mini" style="margin-right: 3px">{{ scope.row.platform }}</el-tag>
+            </template>
+          </el-table-column>
           <el-table-column prop="project" label="项目环境" width="120" align="center"></el-table-column>
           <el-table-column prop="svc_port" label="端口" width="100px"  align="center"></el-table-column>
           <el-table-column prop="servers" label="主机" fit align="center">

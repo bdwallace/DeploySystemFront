@@ -35,8 +35,8 @@
           <el-table-column prop="remark" label="备注" fit align="center"></el-table-column>
           <el-table-column label="操作" width="180" align="center" fixed="right">
             <template slot-scope="scope">
-              <el-button type="text" icon="el-icon-edit" size="mini" @click="editClick(scope.row)">编辑</el-button>
-              <el-button type="text" icon="el-icon-delete" size="mini" @click="deleteDomainClick(scope.row)">删除
+              <el-button type="text" icon="el-icon-edit" size="small" @click="editClick(scope.row)">编辑</el-button>
+              <el-button type="text" icon="el-icon-delete" size="small" @click="deleteDomainClick(scope.row)">删除
               </el-button>
 
             </template>
@@ -72,12 +72,12 @@ export default {
       params: {page: 1, pagesize: 15, total: 0, search: ""},
       dialogCreatePlatformVisable: false,
       tableData: [
-        {domain: "u8-pre.one2.cc", domain_svc_type: "H5", platform: ["预生产3300-U8","测试3300-U8"], is_montior: "是", is_speed: "是", project: "预生产"},
-        {domain: "bet123p.com", domain_svc_type: "H5", platform: ["预生产3300-U8"], is_montior: "是", is_speed: "是", project: "预生产"},
-        {domain: "bet123q.com", domain_svc_type: "H5", platform: ["预生产3300-U8"], is_montior: "是", is_speed: "是", project: "预生产"},
-        {domain: "bet123r.com", domain_svc_type: "H5", platform: ["预生产3300-U8"], is_montior: "是", is_speed: "是", project: "预生产"},
-        {domain: "prebrl.bet123.io", domain_svc_type: "H5", platform: ["预生产3300-U8"], is_montior: "是", is_speed: "是", project: "预生产"},
-        {domain: "rico77.one2.cc", domain_svc_type: "H5", platform: ["预生产3300-U8"], is_montior: "是", is_speed: "是", project: "预生产"}
+        // {domain: "u8-pre.one2.cc", domain_svc_type: "H5", platform: ["预生产3300-U8","测试3300-U8"], is_montior: "是", is_speed: "是", project: "预生产"},
+        // {domain: "bet123p.com", domain_svc_type: "H5", platform: ["预生产3300-U8"], is_montior: "是", is_speed: "是", project: "预生产"},
+        // {domain: "bet123q.com", domain_svc_type: "H5", platform: ["预生产3300-U8"], is_montior: "是", is_speed: "是", project: "预生产"},
+        // {domain: "bet123r.com", domain_svc_type: "H5", platform: ["预生产3300-U8"], is_montior: "是", is_speed: "是", project: "预生产"},
+        // {domain: "prebrl.bet123.io", domain_svc_type: "H5", platform: ["预生产3300-U8"], is_montior: "是", is_speed: "是", project: "预生产"},
+        // {domain: "rico77.one2.cc", domain_svc_type: "H5", platform: ["预生产3300-U8"], is_montior: "是", is_speed: "是", project: "预生产"}
       ],
     }
   },
@@ -107,7 +107,7 @@ export default {
         return 0
       }else {
         this.tableData = resp.data
-        // this.params.total = resp.total
+        this.params.total = resp.total
       }
     },
     addDomainClick(){

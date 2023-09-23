@@ -49,15 +49,15 @@
               <tr><td> &nbsp; </td></tr>
             </table>
         </el-form-item>
-        <el-form-item prop="relate_service" label="关联服务">
-          <el-transfer
-            filterable
-            :titles="titles"
-            filter-placeholder="请输入关键字"
-            v-model="formData.relate_services"
-            :data="services" style="margin-left: 10px">
-          </el-transfer>
-        </el-form-item>
+<!--        <el-form-item prop="relate_service" label="关联服务">-->
+<!--          <el-transfer-->
+<!--            filterable-->
+<!--            :titles="titles"-->
+<!--            filter-placeholder="请输入关键字"-->
+<!--            v-model="formData.relate_services"-->
+<!--            :data="services" style="margin-left: 10px">-->
+<!--          </el-transfer>-->
+<!--        </el-form-item>-->
       </el-form>
 
       <el-button type="primary" @click="createTemplateCommit('create')" v-if="id==='0'">立即提交</el-button>

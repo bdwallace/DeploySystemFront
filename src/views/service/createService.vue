@@ -49,8 +49,11 @@
             <el-form-item prop="health" label="健康检测">
               <el-input v-model="formData.health_url" placeholder="服务名/actuator/health"></el-input>
             </el-form-item>
-            <el-form-item prop="use_nacos" label="Nacos" >
-              <el-input v-model="formData.nacos_url" placeholder="请输入Nacos地址"></el-input>
+            <el-form-item prop="nacos_url" label="Nacos" >
+<!--              <el-input v-model="formData.nacos_url" placeholder="请输入Nacos地址"></el-input>-->
+              <el-select v-model="formData.nacos_url" placeholder="请选择项目环境" style="width: 100%">
+                <el-option v-for='item in projects' :key="item.id" :label="`${item.project_name} / ${item.nacos_url}`" :value="item.id"></el-option>
+              </el-select>
             </el-form-item>
             <el-form-item prop="docker_network" label="Docker Network" required>
     <!--          <el-input v-model="formData.docker_network"></el-input>-->
@@ -105,7 +108,7 @@
                            :label="item.name" :value="item"></el-option>
               </el-select>
 
-              <el-select v-model="formData.param_list[index].host" placeholder="不选为全部主机" style="width: 150px;margin-left: 5px" size="medium">
+              <el-select v-model="formData.param_list[index].server" placeholder="不选为全部主机" style="width: 150px;margin-left: 5px" size="medium">
                 <el-option v-for="item in formData.host_list" :key="item.id" :label="`${item.host_name} / ${item.inner_ip}`" :value="item.id"></el-option>
               </el-select>
 
@@ -165,19 +168,19 @@
               </el-select>
             </el-form-item>
 
-            <el-form-item prop="platform" label="所属平台"  style="margin-top: 10px">
+            <el-form-item prop="platform" label="所属平台"  style="margin-top: 10px" v-if="formData.svc_type !=='java'">
               <el-select v-model="formData.platform" placeholder="请选择平台" style="width: 77%">
                 <el-option v-for='item in platform_list' :key="item.id" :label="item.platform_name" :value="item.id"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item prop="speed_domain" label="加速域名">
-              <el-select v-model="formData.speed_domain" placeholder="请选择加速域名" style="width: 77%">
-                <el-option v-for='item in all_speed_domain' :key='item.id' :label="item.domain" :value="item.id"></el-option>
-              </el-select>
-              <span style="margin-left:3px;color: red" size="1">此域名Mqtt加速！</span>
-            </el-form-item>
-            <el-form-item prop="nomal_domain" label="非加速域名">
-              <div v-for="item in formData.nomal_domain" :key="item.id">{{item.domain}}</div>
+<!--            <el-form-item prop="domain" label="域名" v-if="formData.svc_type !=='java'">-->
+<!--              <el-select v-model="formData.domains" placeholder="请选择域名" style="width: 77%">-->
+<!--                <el-option v-for='item in all_domain' :key='item.id' :label="item.domain" :value="item.id"></el-option>-->
+<!--              </el-select>-->
+<!--              <span style="margin-left:3px;color: red" size="1"></span>-->
+<!--            </el-form-item>-->
+            <el-form-item prop="domains" label="域名" v-if="formData.svc_type !=='java'">
+              <div v-for="item in formData.domains" :key="item.id">{{item.domain}}</div>
             </el-form-item>
           </el-form>
         </div>
@@ -307,7 +310,7 @@ export default {
         // {id: "wsdfgrjgdh",name: "HK-azkaijiang-akbet参数模板", data:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
         // {id: "wsdfgrjgdh",name: "kaijiang_6hao参数模板", data:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
       ],
-      all_speed_domain: [
+      all_domain: [
         {id: 1, domain_name: "reyds.cc"},{id: 2, domain_name: "test.cc"},{id: 3, domain_name: "uiotyj.com"},{id: 4, domain_name: "qwedr.xyz"},
       ],
       formData: {
@@ -399,17 +402,17 @@ export default {
       }
 
 
-      var resp = await getDomain(this.params).catch(() => {
-        this.$message({type: 'error', message: "请求错误"})
-        return 0
-      })
-      if (resp.code !== 200){
-        this.$message({type: 'warning', message: resp.msg})
-        return 0
-      }else {
-        this.all_speed_domain = resp.data
-        // this.params.total = resp.total
-      }
+      // var resp = await getDomain(this.params).catch(() => {
+      //   this.$message({type: 'error', message: "请求错误"})
+      //   return 0
+      // })
+      // if (resp.code !== 200){
+      //   this.$message({type: 'warning', message: resp.msg})
+      //   return 0
+      // }else {
+      //   this.all_domain = resp.data
+      //   // this.params.total = resp.total
+      // }
 
       if (this.$route.params.id === '0'){
         return
@@ -514,6 +517,8 @@ export default {
         }else if (!this.formData.docker_network){
           this.$message({type: 'warning', message: '容器网络不能为空'})
         }
+        delete this.formData.template_name
+        delete this.formData.is_template
         var response = await addService(this.formData).catch(() => {
           this.$message({type: 'error', message: "请求错误"})
           return 0
