@@ -202,9 +202,9 @@ allow all;"></el-input>
       </div>
     </div>
     <div class="save_bottom">
-      <el-button type="primary" @click="createServiceClick('create')" v-if="id==='0'">创建服务</el-button>
+      <el-button type="primary" @click="createServiceClick('create')" v-if="id==='0' || formData.is_template==='是'">创建服务</el-button>
       <el-button type="success" @click="dialogAddVisable = true" v-if="id==='0'">创建服务模板</el-button>
-      <el-button type="primary" @click="createServiceClick('update')" v-else>更新服务</el-button>
+      <el-button type="primary" @click="createServiceClick('update')" v-else>更新保存</el-button>
       <el-button @click="$router.back()">取消</el-button>
     </div>
     <el-dialog title="创建模板" :visible.sync="dialogAddVisable" width="50%">
@@ -423,18 +423,12 @@ export default {
         this.$message({type: 'warning', message: resp.msg})
         return 0
       }else {
-        const obj = resp.data[0]
         this.formData = resp.data[0]
-        try {
-          this.formData.param_list = this.formData.temp_list
-        }catch (error){
-
-        }
         console.log(this.formData)
         // this.params.total = resp.total
       }
     },
-    addTemplateCommit(){
+    async addTemplateCommit(){
       if (!this.formData.svc_name){
         this.$message({type: 'warning', message: '服务名不能为空'})
         this.dialogAddVisable = false
@@ -457,7 +451,16 @@ export default {
         return
       }
       this.formData.is_template = '是'
-
+      var response = await addService(this.formData).catch(() => {
+          this.$message({type: 'error', message: "请求错误"})
+          return 0
+        })
+      if (response.code !== 200){
+        this.$message({type: 'warning', message: response.msg})
+      }else {
+        this.$message({type: 'success', message: response.msg})
+      }
+      this.$router.push('/templates/service_template')
 
       this.dialogAddVisable = false
     },

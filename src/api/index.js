@@ -213,9 +213,9 @@ export function deleteService(params){
 }
 
 
-export function getMenusGroup(params){
+export function getServiceTemplate(params){
   return axios({
-    url: '/menu_group',
+    url: '/svc_temp',
     method: 'get',
     params: params
   })

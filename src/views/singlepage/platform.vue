@@ -17,7 +17,7 @@
           <el-table-column prop="platform_name" label="平台名称" width="200" align="center"></el-table-column>
           <el-table-column prop="services" label="平台服务" fit align="center">
             <template slot-scope="scope">
-                <el-tag v-for="item in scope.row.services" size="small" style="margin-right: 3px">{{ item.service_name }}</el-tag>
+                <el-tag v-for="item in scope.row.services" size="small" style="margin-right: 3px">{{ item.svc_name }}</el-tag>
             </template>
           </el-table-column>
           <el-table-column prop="create_time" label="创建时间" width="180" align="center"></el-table-column>
@@ -58,14 +58,14 @@ export default {
       params: {page: 1, pagesize: 15, total: 0, search: ""},
       tableData: [
         {platform_code: 110, platform_name: "Pre-桑巴舞-3302", create_time: "2023-9-14 10:45:12", update_time: "2023-9-14 10:45:12", services: [
-            {service_name: 'pre-Brl-H5'},{service_name: 'merchant_brl'},{service_name: 'pre-Brl-H5'},{service_name: 'pre-Brl-PC'}]
+            {svc_name: 'pre-Brl-H5'},{svc_name: 'merchant_brl'},{svc_name: 'pre-Brl-H5'},{svc_name: 'pre-Brl-PC'}]
         },
         {platform_code: 3300, platform_name: "预生产3300-U8", create_time: "2023-9-14 10:45:12", update_time: "2023-9-14 10:45:12", services: [
-          {service_name: 'H5_U8'},{service_name: 'merchant_u8'},{service_name: 'share_agent_6hao'},{service_name: 'customer_6hao'},{service_name: 'H5_6hao_proxy'},
-            {service_name: 'HK-azkaijiang-akbet'},{service_name: 'down-share-6hao'},{service_name: 'H5_6hao'}]
+          {svc_name: 'H5_U8'},{svc_name: 'merchant_u8'},{svc_name: 'share_agent_6hao'},{svc_name: 'customer_6hao'},{svc_name: 'H5_6hao_proxy'},
+            {svc_name: 'HK-azkaijiang-akbet'},{svc_name: 'down-share-6hao'},{svc_name: 'H5_6hao'}]
         },
         {platform_code: 3302, platform_name: "Pre-桑巴舞-3302", create_time: "2023-9-14 10:45:12", update_time: "2023-9-14 10:45:12", services: [
-          {service_name: 'superbackend'},{service_name: 'merchant'},{service_name: 'operation'},{service_name: 'nginx'}]
+          {svc_name: 'superbackend'},{svc_name: 'merchant'},{svc_name: 'operation'},{svc_name: 'nginx'}]
         }
       ]
     }

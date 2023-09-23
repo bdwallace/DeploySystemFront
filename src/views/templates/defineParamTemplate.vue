@@ -22,9 +22,9 @@
               <el-tag size="mini" v-for="item in scope.row.config" style="margin-right: 3px">{{ item.value }}</el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="with_service" label="服务关联" fit align="center">
+          <el-table-column prop="services" label="服务关联" fit align="center">
             <template slot-scope="scope">
-              <el-tag size="small" style="margin-right: 3px;margin-top: 5px;" v-for="item in scope.row.with_service">{{ item.name }}</el-tag>
+              <el-tag size="small" style="margin-right: 3px;margin-top: 5px;" v-for="item in scope.row.services">{{ item.svc_name }}</el-tag>
             </template>
           </el-table-column>
           <el-table-column prop="create_time" label="创建时间" width="180" align="center"></el-table-column>

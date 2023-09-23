@@ -31,9 +31,9 @@
             </template>
           </el-table-column>
           <el-table-column prop="name" label="模板名称" width="150px" align="center"></el-table-column>
-          <el-table-column prop="with_service" label="服务关联" fit align="center">
+          <el-table-column prop="services" label="服务关联" fit align="center">
             <template slot-scope="scope">
-              <el-tag size="small" style="margin-right: 3px;margin-top: 5px;" v-for="item in scope.row.with_service">{{ item.name }}</el-tag>
+              <el-tag size="small" style="margin-right: 3px;margin-top: 5px;" v-for="item in scope.row.services">{{ item.svc_name }}</el-tag>
             </template>
           </el-table-column>
           <el-table-column prop="create_time" label="创建时间" width="180px" align="center"></el-table-column>
@@ -81,17 +81,17 @@ export default {
       multipleSelection: [],
       projects: [],
       tableData: [
-        {param_name: "def_other", data: {"spring.redis.host": "10.210.0.124", "spring.redis.port": 6379, "ak.stat.redis.host": "10.210.0.124"}, with_service: [{name: "superbackend"}, {name: "zuul"}, {name: "eureka"}, {name: "config_remoteservice_provider"},
-            {name: "lottery_mqtt"}, {name: "lottery_c2c_api"}, {name: "lottery_task"}], create_time: "2023-9-12 12:00:00", update_time: "2023-9-12 12:00:00"},
-        {param_name: "eureka", data: {"LOG_SERVER_HOST": "10.210.0.124", "LOG_SERVER_UDP_PORT": 12201, "nacos.config.server-addr": "10.210.0.91:8080"}, with_service: [{name: "superbackend"}, {name: "zuul"}, {name: "eureka"}, {name: "config_remoteservice_provider"},
-          {name: "lottery_mqtt"}, {name: "lottery_c2c_api"}, {name: "lottery_task"}], create_time: "2023-9-12 12:00:00", update_time: "2023-9-12 12:00:00"},
-        {param_name: "redis", with_service: [{name: "superbackend"}, {name: "zuul"}, {name: "eureka"}, {name: "config_remoteservice_provider"},
-          {name: "lottery_mqtt"}, {name: "lottery_c2c_api"}, {name: "lottery_task"}], create_time: "2023-9-12 12:00:00", update_time: "2023-9-12 12:00:00"},
-        {param_name: "encrypt", with_service: [{name: "superbackend"}, {name: "zuul"}, {name: "eureka"}, {name: "config_remoteservice_provider"},
-          {name: "lottery_mqtt"}, {name: "lottery_c2c_api"}, {name: "lottery_task"}], create_time: "2023-9-12 12:00:00", update_time: "2023-9-12 12:00:00"},
-        {param_name: "emqtt-elb", with_service: [{name: "merchant_1235"}, {name: "chat_1235"}, {name: "merchant"}, {name: "agent_1235"},
-          {name: "share_agent_1235"}, {name: "H5_1235"}, {name: "customer_1235"}], create_time: "2023-9-12 12:00:00", update_time: "2023-9-12 12:00:00"},
-        {param_name: "emqtt", with_service: [{name: "lottery_mqtt"}], create_time: "2023-9-12 12:00:00", update_time: "2023-9-12 12:00:00"},
+        // {param_name: "def_other", data: {"spring.redis.host": "10.210.0.124", "spring.redis.port": 6379, "ak.stat.redis.host": "10.210.0.124"}, services: [{name: "superbackend"}, {name: "zuul"}, {name: "eureka"}, {name: "config_remoteservice_provider"},
+        //     {name: "lottery_mqtt"}, {name: "lottery_c2c_api"}, {name: "lottery_task"}], create_time: "2023-9-12 12:00:00", update_time: "2023-9-12 12:00:00"},
+        // {param_name: "eureka", data: {"LOG_SERVER_HOST": "10.210.0.124", "LOG_SERVER_UDP_PORT": 12201, "nacos.config.server-addr": "10.210.0.91:8080"}, services: [{name: "superbackend"}, {name: "zuul"}, {name: "eureka"}, {name: "config_remoteservice_provider"},
+        //   {name: "lottery_mqtt"}, {name: "lottery_c2c_api"}, {name: "lottery_task"}], create_time: "2023-9-12 12:00:00", update_time: "2023-9-12 12:00:00"},
+        // {param_name: "redis", services: [{name: "superbackend"}, {name: "zuul"}, {name: "eureka"}, {name: "config_remoteservice_provider"},
+        //   {name: "lottery_mqtt"}, {name: "lottery_c2c_api"}, {name: "lottery_task"}], create_time: "2023-9-12 12:00:00", update_time: "2023-9-12 12:00:00"},
+        // {param_name: "encrypt", services: [{name: "superbackend"}, {name: "zuul"}, {name: "eureka"}, {name: "config_remoteservice_provider"},
+        //   {name: "lottery_mqtt"}, {name: "lottery_c2c_api"}, {name: "lottery_task"}], create_time: "2023-9-12 12:00:00", update_time: "2023-9-12 12:00:00"},
+        // {param_name: "emqtt-elb", services: [{name: "merchant_1235"}, {name: "chat_1235"}, {name: "merchant"}, {name: "agent_1235"},
+        //   {name: "share_agent_1235"}, {name: "H5_1235"}, {name: "customer_1235"}], create_time: "2023-9-12 12:00:00", update_time: "2023-9-12 12:00:00"},
+        // {param_name: "emqtt", services: [{name: "lottery_mqtt"}], create_time: "2023-9-12 12:00:00", update_time: "2023-9-12 12:00:00"},
       ]
     }
   },
