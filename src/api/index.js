@@ -221,11 +221,12 @@ export function getServiceTemplate(params){
   })
 }
 
-export function addMenusGroup(data){
+export function downloadCert(params){
   return axios({
-    url: '/menu_group',
-    method: 'post',
-    data
+    url: '/download',
+    method: 'get',
+    responseType: "blob",
+    params
   })
 }
 

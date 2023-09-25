@@ -25,8 +25,9 @@
             <template slot-scope="scope" >
               <div v-for="item in scope.row.services">
                 <el-tag size="small" style="margin-right: 3px;margin-top: 3px;width: 200px" >{{ item.docker_name }}</el-tag>
-                <el-tag size="small" style="margin-right: 3px;width: 100px" v-if="item.run_time==='未知'" type="warning" >{{ item.run_time }}</el-tag>
-                <el-tag size="small" style="margin-right: 3px;width: 100px" v-else>{{ item.run_time }}</el-tag>
+                <el-tag size="small" style="margin-right: 3px;margin-top: 3px;width: 100px"
+                        v-if="item.run_time==='未知' || item.run_time===''" type="warning" >{{ item.run_time }}</el-tag>
+                <el-tag size="small" style="margin-right: 3px;margin-top: 3px;width: 100px" v-else>{{ item.run_time }}</el-tag>
                 <el-tooltip effect="light" content="http://54.179.119.160:8134/login" placement="left">
                   <el-tag v-if="item.health==='200'" size="small" type="success" >运行中</el-tag>
                   <el-tag v-else-if="item.health==='未知'" size="small" type="warning" style="width: 52px">未知</el-tag>
@@ -145,25 +146,25 @@ export default {
       multipleSelection: [],
       projects: [],
       tableData: [
-        {host_name: "pre-base-services-a", public_ip: "13.250.57.29",inner_ip: "172.166.10.50",services: [{docker_name: "zuul",health: "未知", run_time: "未知"},
-            {docker_name: "common-api",health: "400", run_time: "Up 37 hours"},
-            {docker_name: "eureka",health: "未知", run_time: "未知"}], envir: "预生产", create_time: "2023-9-12 12:00:00"},
-        {host_name: "pre-base-services-b", public_ip: "13.229.239.172",inner_ip: "172.166.1.62",
-          services: [{docker_name: "common-api",health: "200", run_time: "Up 37 hours"},{docker_name: "eureka",health: "200", run_time: "Up 37 hours"}], envir: "预生产", create_time: "2023-9-12 12:00:00"},
-        {host_name: "pre-micro-services-a", public_ip: "54.169.77.132",inner_ip: "172.166.2.244",
-          services: [], envir: "预生产", create_time: "2023-9-12 12:00:00"},
-        {host_name: "pre-config-services-01-a", public_ip: "13.212.96.7",inner_ip: "172.166.9.34",
-          services: [{docker_name: "config_issue_api",health: "200", run_time: "Up 37 hours"},
-            {docker_name: "config_open_api",health: "200", run_time: "Up 37 hours"},
-            {docker_name: "config_api",health: "200", run_time: "Up 37 hours"}], envir: "预生产", create_time: "2023-9-12 12:00:00"},
-        {host_name: "pre-config-services-02-a", public_ip: "54.179.87.237",inner_ip: "172.166.13.180",
-          services: [{docker_name: "config_mq_consumer",health: "200", run_time: "Up 37 hours"},{docker_name: "config_timer",health: "200", run_time: "Up 37 hours"},
-            {docker_name: "config_admin_api",health: "200", run_time: "Up 37 hours"}], envir: "预生产", create_time: "2023-9-12 12:00:00"},
-        {host_name: "pre-lottery-services-01-a", public_ip: "54.254.168.236",inner_ip: "172.166.11.97",
-          services: [{docker_name: "zuul_u8-pre",health: "200", run_time: "Up 37 hours"},
-            {docker_name: "cadvisor",health: "200", run_time: "Up 37 hours"},
-            {docker_name: "mysql",health: "400", run_time: "Up 37 hours"},
-            {docker_name: "nacos-standalone-mysql",health: "200", run_time: "Up 37 hours"}], envir: "预生产", create_time: "2023-9-12 12:00:00"},
+        // {host_name: "pre-base-services-a", public_ip: "13.250.57.29",inner_ip: "172.166.10.50",services: [{docker_name: "zuul",health: "未知", run_time: "未知"},
+        //     {docker_name: "common-api",health: "400", run_time: "Up 37 hours"},
+        //     {docker_name: "eureka",health: "未知", run_time: "未知"}], envir: "预生产", create_time: "2023-9-12 12:00:00"},
+        // {host_name: "pre-base-services-b", public_ip: "13.229.239.172",inner_ip: "172.166.1.62",
+        //   services: [{docker_name: "common-api",health: "200", run_time: "Up 37 hours"},{docker_name: "eureka",health: "200", run_time: "Up 37 hours"}], envir: "预生产", create_time: "2023-9-12 12:00:00"},
+        // {host_name: "pre-micro-services-a", public_ip: "54.169.77.132",inner_ip: "172.166.2.244",
+        //   services: [], envir: "预生产", create_time: "2023-9-12 12:00:00"},
+        // {host_name: "pre-config-services-01-a", public_ip: "13.212.96.7",inner_ip: "172.166.9.34",
+        //   services: [{docker_name: "config_issue_api",health: "200", run_time: "Up 37 hours"},
+        //     {docker_name: "config_open_api",health: "200", run_time: "Up 37 hours"},
+        //     {docker_name: "config_api",health: "200", run_time: "Up 37 hours"}], envir: "预生产", create_time: "2023-9-12 12:00:00"},
+        // {host_name: "pre-config-services-02-a", public_ip: "54.179.87.237",inner_ip: "172.166.13.180",
+        //   services: [{docker_name: "config_mq_consumer",health: "200", run_time: "Up 37 hours"},{docker_name: "config_timer",health: "200", run_time: "Up 37 hours"},
+        //     {docker_name: "config_admin_api",health: "200", run_time: "Up 37 hours"}], envir: "预生产", create_time: "2023-9-12 12:00:00"},
+        // {host_name: "pre-lottery-services-01-a", public_ip: "54.254.168.236",inner_ip: "172.166.11.97",
+        //   services: [{docker_name: "zuul_u8-pre",health: "200", run_time: "Up 37 hours"},
+        //     {docker_name: "cadvisor",health: "200", run_time: "Up 37 hours"},
+        //     {docker_name: "mysql",health: "400", run_time: "Up 37 hours"},
+        //     {docker_name: "nacos-standalone-mysql",health: "200", run_time: "Up 37 hours"}], envir: "预生产", create_time: "2023-9-12 12:00:00"},
       ]
     }
   },

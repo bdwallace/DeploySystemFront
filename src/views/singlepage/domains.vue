@@ -29,7 +29,7 @@
           <el-table-column prop="cert" label="证书" fit align="center">
             <template slot-scope="scope">
 <!--              <el-button type="primary" plain size="mini">上传</el-button>-->
-              <el-button type="success" plain size="mini">下载</el-button>
+              <el-button type="success" plain size="mini" @click="downloadCertClick(scope.row)">下载</el-button>
             </template>
           </el-table-column>
           <el-table-column prop="remark" label="备注" fit align="center"></el-table-column>
@@ -61,7 +61,7 @@
 
 <script>
 
-import {deleteDomain, deletePlatform, getDomain} from "@/api";
+import {deleteDomain, deletePlatform, downloadCert, getDomain} from "@/api";
 
 export default {
   // eslint-disable-next-line vue/multi-word-compone
@@ -127,6 +127,18 @@ export default {
         this.$message({type: 'success', message: response.msg})
       }
       await this.fetchData()
+    },
+    async downloadCertClick(row){
+      var response = await downloadCert({'id': row.id}).catch(() => {
+        this.$message({type: "error", message: "下载错误"})
+      })
+      const url = window.URL.createObjectURL(new Blob([response]))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute("download", row.domain+'.zip')
+
+      link.click()
+      window.URL.revokeObjectURL(url)
     }
   }
 }
