@@ -10,31 +10,31 @@
                   border :header-cell-style="{background:'#eef1f6',color:'#606266'}">
 
           <el-table-column prop="svc_name" label="服务名称" width="120" align="center"></el-table-column>
-          <el-table-column prop="port" label="端口" width="100" align="center"></el-table-column>
-          <el-table-column prop="envir" label="环境" width="120" align="center">
+          <el-table-column prop="svc_port" label="端口" width="100" align="center"></el-table-column>
+          <el-table-column prop="project" label="环境" width="120" align="center">
             <template slot-scope="scope">
-              <el-tag  type="danger" size="mini">{{ scope.row.envir }}</el-tag>
+              <el-tag  type="danger" size="mini">{{ scope.row.project }}</el-tag>
             </template>
           </el-table-column>
           <el-table-column prop="platform" label="平台" width="100" align="center"></el-table-column>
-          <el-table-column prop="new_version" label="发布版本"  width="400" align="center">
+          <el-table-column prop="new_tag" label="发布版本"  width="400" align="center">
             <template slot-scope="scope">
-              <el-tag v-if="checkRelease(scope.row.tag)" style="margin-right: 3px" type="success" size="mini">
+              <el-tag v-if="checkRelease(scope.row.new_tag)" style="margin-right: 3px" type="success" size="mini">
                 <i class="el-icon-success"></i>
               </el-tag>
-              <el-tag v-if="!checkRelease(scope.row.tag)" style="margin-right: 3px" type="danger" size="mini">
+              <el-tag v-if="!checkRelease(scope.row.new_tag)" style="margin-right: 3px" type="danger" size="mini">
                 <i class="el-icon-error"></i>
               </el-tag>
-              <el-input v-if="tag_post" v-model="scope.row.tag.tag_name" size="mini" disabled readonly style="width: 280px"></el-input>
-              <el-select v-else v-model="scope.row.tag" filterable size="mini" style="width: 280px;margin-right: 3px" value-key="id"  @change="checkRelease(scope.row.tag)">
-                  <el-option v-for="item in scope.row.release" style="font-size: 5px;"
-                             :key="item.id" :label="item.tag_name" :value="item">
-                  </el-option>
+              <el-input v-if="tag_post" v-model="scope.row.new_tag" size="mini" disabled readonly style="width: 280px"></el-input>
+              <el-select v-else v-model="scope.row.new_tag" filterable size="mini" style="width: 280px;margin-right: 3px"  @change="checkRelease(scope.row.new_tag)">
+                <el-option v-for="item in scope.row.release" style="font-size: 5px;"
+                           :key="item" :label="item" :value="item">
+                </el-option>
               </el-select>
 
-              <el-tooltip  placement="bottom" :content="scope.row.servers[0].run_version">
+              <el-tooltip  placement="bottom" :content="scope.row.run_tag">
                 <el-button type="success" size="mini" style="width: 50px" v-if="!tag_post"
-                         @click="scope.row.tag = scope.row.servers[0].run_version" >回退</el-button>
+                         @click="scope.row.new_tag = scope.row.run_tag" >回退</el-button>
               </el-tooltip>
 
 
@@ -77,11 +77,11 @@
       </div>
 <!--      <div class="item-block" style="margin-top: 10px;width: 99%">-->
         <el-tabs type="border-card" v-model="count" @tab-click="check_tag" style="margin-top: 10px;width: 99%">
-          <el-tab-pane label="新发布" :name="`0`">
+          <el-tab-pane label="新发布" >
             <div>
               <el-button v-if="!tag_post" size="medium" type="primary" @click="commitTag">确定Tag版本</el-button>
               <div v-else style="display:inline">
-                  <el-button type="primary" @click="on_submit_form(true)" :loading="on_submit_loading" style="margin-right: 50px">灰度发布
+                  <el-button type="primary" @click="on_submit_form(true)" style="margin-right: 50px">灰度发布
                   </el-button>
                   <el-button @click="tag_post=false">取消</el-button>
 
@@ -90,19 +90,19 @@
                   </el-button>
 
                   <el-button type="danger"  style="float: right;margin-right:30px"
-                      @click="on_submit_form(false)" :loading="on_submit_loading">全部发布
+                      @click="on_submit_form(false)" >全部发布
                   </el-button>
               </div>
             </div>
           </el-tab-pane>
 
-          <el-tab-pane v-for="item in itemCount" :key="item" :name="`${parseInt(item)}`" :label="`第${item}次发布`"></el-tab-pane>
+<!--          <el-tab-pane v-for="item in itemCount" :key="item" :name="`${parseInt(item)}`" :label="`第${item}次发布`"></el-tab-pane>-->
         </el-tabs>
 
         <div class="log">
             <code style="background-color: rgb(0, 0, 0);color:#00ff00">
                 <br>
-                <span v-for="n in showText" :style="{'color': n.color}" :key="n"> <pre style=" white-space: pre-wrap;" v-html="n.text"></pre> <br></span>
+                <span v-for="(n, i) in showText" :style="{'color': n.color}" :key="i"> <pre style=" white-space: pre-wrap;" v-html="n.text"></pre> <br></span>
                 <br>
             </code>
         </div>
@@ -113,20 +113,26 @@
 
 <script>
 
+import {getProcess, getTagList} from "@/api";
+
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: 'Deploy',
   data() {
     return {
+      task_id: this.$route.params.id,
       tag_post: false,
+      is_backDialog: false,
+      count: 0,
+      itemCount: [],
       params: {page: 1, pagesize: 15, total: 0, search: ""},
       all_release: [
           {id: 1, tag: "RLS_LOTTERY_20230620_01"},{id: 2, tag: "dev-temp"},{id: 3, tag: "RLS_OK_20230817_02"},{id: 1, tag: "RLS_LOTTERY_20230620_01"},
       ],
       tableData: [
-        {svc_name: "eureka", port: "8134:8134", envir: "预生产hgjdfgjjklyil", platform: "aozhou_kaijiang", tag: "", release: [{id: 1, tag_name: "RLS_LOTTERY_20230620_01"},{id: 2, tag_name: "dev-temp"},{id: 3, tag_name: "RLS_OK_20230817_02"},{id: 4, tag_name: "RLS_LOTTERY_20230620_03"}], servers: [
-          {public_ip: "52.221.75.184", inner_ip: "172.166.97.254",run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"},
-          {public_ip: "18.136.78.64",inner_ip: "172.166.97.172", run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"}],}
+        // {svc_name: "eureka", port: "8134:8134", envir: "预生产hgjdfgjjklyil", platform: "aozhou_kaijiang", tag: "", release: [{id: 1, tag_name: "RLS_LOTTERY_20230620_01"},{id: 2, tag_name: "dev-temp"},{id: 3, tag_name: "RLS_OK_20230817_02"},{id: 4, tag_name: "RLS_LOTTERY_20230620_03"}], servers: [
+        //   {public_ip: "52.221.75.184", inner_ip: "172.166.97.254",run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"},
+        //   {public_ip: "18.136.78.64",inner_ip: "172.166.97.172", run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"}],}
       ],
       showText: [
         {color: '#00ff00', text: "daf550de2b27fa8226b5344bc5dae972db368148736d10118521c21642461f99"},
@@ -151,6 +157,31 @@ export default {
       this.multipleSelection = val
     },
     async fetchData() {
+      this.params.search = this.task_id
+      let data = []
+      var resp = await getProcess(this.params).catch(() => {
+        this.$message({type: 'error', message: "请求错误"})
+        return 0
+      })
+      if (resp.code !== 200){
+        this.$message({type: 'warning', message: resp.msg})
+        return 0
+      }else {
+        data = resp.data[0].services
+        this.params.total = resp.total
+      }
+
+      for (const item of data) {
+        var resp = await getTagList({image_path: item.image_harbor})
+          if (resp.code !== 200){
+          this.$message({type: 'warning', message: resp.msg})
+        }else {
+          item.release = resp.data
+        }
+      }
+      this.tableData = data
+      console.log(this.tableData)
+
 
     },
     commitTag(){
@@ -165,8 +196,14 @@ export default {
     },
     checkRelease(row){
       console.log(row)
-      return true
-    }
+      if (row){
+        return true
+      }else {
+        return false
+      }
+    },
+    on_submit_form(){},
+    check_tag(){}
   }
 }
 </script>

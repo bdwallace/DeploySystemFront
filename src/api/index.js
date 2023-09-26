@@ -233,38 +233,39 @@ export function downloadCert(params){
 
 
 
-export function getApis(params){
+export function getProcess(params){
   return axios({
-    url: '/apis',
+    url: '/process',
     method: 'get',
     params: params
   })
 }
 
 
-export function addApis(data){
+export function addProcess(data){
   return axios({
-    url: '/apis',
+    url: '/process',
     method: 'post',
     data
   })
 }
 
-export function editApis(params){
+export function deleteProcess(params){
   return axios({
-    url: '/apis',
-    method: 'put',
-    params
-  })
-}
-
-export function deleteApis(params){
-  return axios({
-    url: '/apis',
+    url: '/process',
     method: 'delete',
     params
   })
 }
+
+export function getTagList(params){
+  return axios({
+    url: '/taglist',
+    method: 'get',
+    params
+  })
+}
+
 
 
 export function getApiGroup(params){
@@ -275,9 +276,9 @@ export function getApiGroup(params){
   })
 }
 
-export function addApiGroup(data){
+export function dockerCheck(data){
   return axios({
-    url: '/api_group',
+    url: '/docker_check',
     method: 'post',
     data
   })

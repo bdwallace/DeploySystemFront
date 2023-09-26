@@ -7,7 +7,7 @@
         </el-input>
         <el-button type="primary" icon="el-icon-plus" size="small" style="margin-left: 20px" @click="createService">创建服务</el-button>
         <el-button type="success" icon="el-icon-circle-check" size="small" style="margin-left: 20px" @click="helthCheckClick">服务检测</el-button>
-        <el-button type="danger" icon="el-icon-s-promotion" size="small" style="margin-left: 20px" @click="dialogAddVisable=true">服务发布</el-button>
+        <el-button type="danger" icon="el-icon-s-promotion" size="small" style="margin-left: 20px" @click="batchDeployClick">批量发布</el-button>
       </div>
 
 
@@ -93,7 +93,7 @@
 <script>
 
 import {
-  getUsers, deleteUsers, updateUser, editUsers, getService, deleteService
+  getUsers, deleteUsers, updateUser, editUsers, getService, deleteService, addProcess
 } from "@/api";
 
 export default {
@@ -211,9 +211,38 @@ export default {
 
       })
     },
-    deployClick(row){
-      this.editData = row
-      this.$router.push('/services/deploy/' + row.id)
+    async deployClick(row){
+      var response = await addProcess({"id": row.id}).catch(() => {
+        this.$message({type: "error", message: "请求失败"})
+        return 0
+      })
+      if (response.code !== 200){
+        this.$message({type: "error", message: response.msg})
+        return
+      } else {
+        this.$message({type: "success", message: response.msg})
+      }
+      // console.log(response.data)
+      this.$router.push('/services/deploy/' + response.data.task_id)
+    },
+    async batchDeployClick(){
+      const services_id = []
+      this.multipleSelection.forEach(item => {
+        services_id.push(item.id)
+      })
+      console.log(services_id)
+      var response = await addProcess({"id": services_id}).catch(() => {
+        this.$message({type: "error", message: "请求失败"})
+        return 0
+      })
+      if (response.code !== 200){
+        this.$message({type: "error", message: response.msg})
+        return
+      } else {
+        this.$message({type: "success", message: response.msg})
+      }
+      // console.log(response.data)
+      this.$router.push('/services/deploy/' + response.data.task_id)
     },
     restartClick(item){
 

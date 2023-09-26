@@ -30,7 +30,7 @@
                 <el-tag size="small" style="margin-right: 3px;margin-top: 3px;width: 100px" v-else>{{ item.run_time }}</el-tag>
                 <el-tooltip effect="light" content="http://54.179.119.160:8134/login" placement="left">
                   <el-tag v-if="item.health==='200'" size="small" type="success" >运行中</el-tag>
-                  <el-tag v-else-if="item.health==='未知'" size="small" type="warning" style="width: 52px">未知</el-tag>
+                  <el-tag v-else-if="item.health==='未知' || item.health" size="small" type="warning" style="width: 52px">未知</el-tag>
                   <el-tag v-else type="danger" size="small" style="width: 52px">异常</el-tag>
                 </el-tooltip>
               </div>
@@ -39,7 +39,9 @@
           </el-table-column>
           <el-table-column prop="host_status" label="主机状态" width="100" align="center">
             <template slot-scope="scope">
-              <el-tag type="success" size="small" style="margin-right: 3px;margin-top: 3px" >{{ scope.row.host_status }}</el-tag>
+              <el-tag v-if="scope.row.host_status==='正常'" size="small" type="success" >正常</el-tag>
+              <el-tag v-else-if="scope.row.host_status==='未知' " size="small" type="warning" style="width: 52px">未知</el-tag>
+              <el-tag v-else type="danger" size="small" style="width: 52px">异常</el-tag>
             </template>
           </el-table-column>
           <el-table-column prop="create_time" label="更新时间" width="160" align="center"></el-table-column>
@@ -127,7 +129,7 @@
 
 import {
   addHost,
-  deleteHost, editHost, getHosts, getProject
+  deleteHost, dockerCheck, editHost, getHosts, getProject
 } from "@/api";
 
 export default {
@@ -233,7 +235,7 @@ export default {
       this.dialogEditVisable = true
     },
     async addHostCommit(){
-      console.log(this.addHost)
+      // console.log(this.addHost)
       var response = await addHost(this.addHost).catch(() => {
         this.$message({type: "error", message: "请求失败"})
         return 0
@@ -249,7 +251,7 @@ export default {
     async editHostCommit(){
       delete this.editHost.create_time
       delete this.editHost.update_time
-      console.log(this.editHost)
+      // console.log(this.editHost)
       var response = await editHost(this.editHost).catch(() => {
         this.$message({type: "error", message: "请求失败"})
         return 0
@@ -262,16 +264,39 @@ export default {
       this.dialogEditVisable = false
       await this.fetchData()
     },
-    createServer(){
-
-    },
-    dockerCheckClick(){
-      this.tableData.forEach((item) => {
-        console.log(item)
-        item.services.forEach((server) => {
-          server.health = "200"
-          server.run_time = 'Up 7 weeks'
+    async dockerCheckClick(){
+      let reqs = []
+      for (const i in this.multipleSelection){
+        let obj = this.multipleSelection[i]
+        let data = {
+          id : obj.id,
+          inner_ip: obj.inner_ip,
+          docker_port: obj.docker_port,
+          svc: obj.services
+        }
+        let req = new Promise((resolve, reject) =>{
+          dockerCheck(data).then( res => {
+            resolve(res)
+          }).catch(err=>{
+            reject(err)
+          })
         })
+        reqs.push(req)
+      }
+      this.$message({type: "success", message: "检测中,请稍后"})
+      Promise.all(reqs).then( res => {
+        console.log(res)
+        for (const i in res){
+          if (res[i].code === 401){
+          this.multipleSelection[i].host_status = "异常"
+        }else if (res[i].code !== 200){
+          this.$message({type: "error", message: res[i].msg})
+        } else {
+          // this.$message({type: "success", message: response.msg})
+          this.multipleSelection[i].services = res[i].data.svc
+        }
+        }
+
       })
     }
   }
