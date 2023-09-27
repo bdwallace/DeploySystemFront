@@ -42,7 +42,7 @@
           </el-table-column>
           <el-table-column prop="check" label="检测" width="80" align="center">
             <template slot-scope="scope">
-              <el-button size="mini" type="primary" @click="checkClick(scope.row.servers)">检测</el-button>
+              <el-button size="mini" type="primary" @click="checkClick(scope.row)">检测</el-button>
             </template>
           </el-table-column>
           <el-table-column prop="servers" label="主机" fit align="center">
@@ -60,8 +60,9 @@
                 <el-tag size="small" style="margin-right: 3px;width: 110px;margin-top: 3px" >{{ item.public_ip }}</el-tag>
                 <el-tag size="small" style="margin-right: 3px;width: 110px" type="info">{{ item.inner_ip }}</el-tag>
                 <el-tag size="small" style="margin-right: 3px;width: 83px" v-if="item.run_time==='未知'" type="warning" >{{ item.run_time }}</el-tag>
+                <el-tag size="small" style="margin-right: 3px;width: 83px" v-else-if="item.run_time.indexOf('exited')===0" type="danger" >{{ item.run_time }}</el-tag>
                 <el-tag size="small" style="margin-right: 3px;" v-else>{{ item.run_time }}</el-tag>
-                <el-input readonly class="input_blue" style="width: 200px" size="mini" v-model="item.run_version" ></el-input>
+                <el-input readonly class="input_blue" style="width: 200px" size="mini" v-model="item.run_tag" ></el-input>
                 <el-tooltip effect="light" content="http://54.179.119.160:8134/login" placement="left" style="margin-right: 3px">
                   <el-tag v-if="item.health==='200'" size="small" type="success" >健康</el-tag>
                   <el-tag v-else-if="item.health==='未知'" size="small" type="warning">未知</el-tag>
@@ -79,7 +80,7 @@
         <el-tabs type="border-card" v-model="count" @tab-click="check_tag" style="margin-top: 10px;width: 99%">
           <el-tab-pane label="新发布" >
             <div>
-              <el-button v-if="!tag_post" size="medium" type="primary" @click="commitTag">确定Tag版本</el-button>
+              <el-button v-if="!tag_post" size="medium" type="primary" @click="commitTag" >确定Tag版本</el-button>
               <div v-else style="display:inline">
                   <el-button type="primary" @click="on_submit_form(true)" style="margin-right: 50px">灰度发布
                   </el-button>
@@ -113,7 +114,7 @@
 
 <script>
 
-import {getProcess, getTagList} from "@/api";
+import {commitDeployTask, commitTag, getLog, getProcess, getTagList, svcCheck} from "@/api";
 
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
@@ -121,9 +122,11 @@ export default {
   data() {
     return {
       task_id: this.$route.params.id,
+      task_name: "",
       tag_post: false,
       is_backDialog: false,
       count: 0,
+
       itemCount: [],
       params: {page: 1, pagesize: 15, total: 0, search: ""},
       all_release: [
@@ -135,13 +138,14 @@ export default {
         //   {public_ip: "18.136.78.64",inner_ip: "172.166.97.172", run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"}],}
       ],
       showText: [
-        {color: '#00ff00', text: "daf550de2b27fa8226b5344bc5dae972db368148736d10118521c21642461f99"},
-        {color: '#FDFEFE', text: "daf550de2b27fa8226b5344bc5dae972db368148736d10118521c21642461f99"},
+        // {color: '#00ff00', text: "daf550de2b27fa8226b5344bc5dae972db368148736d10118521c21642461f99"},
+        // {color: '#FDFEFE', text: "daf550de2b27fa8226b5344bc5dae972db368148736d10118521c21642461f99"},
       ]
     }
   },
   created() {
-    this.fetchData()
+    this.fetchData();
+    this.getLog();
   },
   methods: {
     currentChange(page) {
@@ -153,7 +157,7 @@ export default {
       this.fetchData()
     },
     handleSelectionChange(val) {
-      console.log(val)
+      // console.log(val)
       this.multipleSelection = val
     },
     async fetchData() {
@@ -168,42 +172,88 @@ export default {
         return 0
       }else {
         data = resp.data[0].services
+        this.task_name = resp.data[0].name
         this.params.total = resp.total
       }
 
       for (const item of data) {
         var resp = await getTagList({image_path: item.image_harbor})
-          if (resp.code !== 200){
+        if (resp.code !== 200){
           this.$message({type: 'warning', message: resp.msg})
         }else {
           item.release = resp.data
         }
+        this.checkClick(item)
       }
       this.tableData = data
       console.log(this.tableData)
 
 
     },
-    commitTag(){
+    async commitTag(){
+      // console.log(this.tableData)
+      var resp = await commitTag(this.tableData)
+      if (resp.code !== 200){
+          this.$message({type: 'warning', message: resp.msg})
+        }else {
+          this.$message({type: 'success', message: resp.msg})
+        }
       this.tag_post = true
     },
-    checkClick(row){
-      console.log(row)
-      row.forEach(item => {
-        item.health = "200"
-        item.run_time = "Up 3 weeks"
+    async checkClick(row){
+      // console.log(row)
+      var response = await svcCheck({id: row.id}).catch(() => {
+        this.$message({type: "error", message: "请求失败"})
+        return 0
       })
+     if (response.code !== 200){
+        this.$message({type: "error", message: response.msg})
+      } else {
+        // this.$message({type: "success", message: response.msg})
+       let index = this.tableData.indexOf(row)
+       this.tableData[index].servers = response.data
+      }
     },
     checkRelease(row){
-      console.log(row)
+      // console.log(row)
       if (row){
         return true
       }else {
         return false
       }
     },
-    on_submit_form(){},
-    check_tag(){}
+    async on_submit_form(){
+      var resp = await commitDeployTask({"services": this.tableData, "task_name": this.task_name})
+      if (resp.code !== 200){
+        this.$message({type: 'warning', message: resp.msg})
+      }else {
+        this.$message({type: 'success', message: resp.msg})
+      }
+    },
+    check_tag(){},
+    async getLog(){
+      var resp = await getLog({id: this.task_id})
+      if (resp.code !== 200){
+        this.$message({type: 'warning', message: resp.msg})
+      }else {
+
+      }
+      let text_list = resp.data.text.split("\n")
+      text_list.forEach(item => {
+        let i = {}
+        console.log(item.indexOf('成功'))
+        if (item.indexOf('成功')!==-1){
+
+          i.color = '#00ff00'
+          i.text = item
+          this.showText.push(i)
+        }else {
+          i.color = '#FDFEFE'
+          i.text = item
+          this.showText.push(i)
+        }
+      })
+    }
   }
 }
 </script>

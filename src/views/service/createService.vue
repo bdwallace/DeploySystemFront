@@ -382,7 +382,7 @@ export default {
       }else {
         this.allhosts = response.data
       }
-
+      this.params.pagesize = 30
       var response = await getCommonParamTemplate(this.params).catch(() => {
         this.$message({type: 'error', message: "请求错误"})
         return 0

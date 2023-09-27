@@ -31,6 +31,7 @@
                 <el-tag size="small" style="margin-right: 3px;width: 110px;margin-top: 3px" >{{ item.public_ip }}</el-tag>
                 <el-tag size="small" style="margin-right: 3px;width: 110px" type="info">{{ item.inner_ip }}</el-tag>
                 <el-tag size="small" style="margin-right: 3px;width: 83px" v-if="item.run_time==='未知' || item.run_time===''" type="warning" >未知</el-tag>
+                <el-tag size="small" style="margin-right: 3px;width: 83px" v-else-if="item.run_time.indexOf('exited')===0" type="danger" >{{ item.run_time }}</el-tag>
                 <el-tag size="small" style="margin-right: 3px;" v-else>{{ item.run_time }}</el-tag>
                 <el-tooltip effect="light" content="http://54.179.119.160:8134/login" placement="left" style="margin-right: 5px">
                   <el-tag v-if="item.health==='200'" size="small" type="success" >健康</el-tag>
@@ -43,9 +44,14 @@
             </template>
           </el-table-column>
           <el-table-column prop="run_tag" label="运行版本" width="240px" align="center">
-<!--            <template slot-scope="scope">-->
-<!--              {{scope.row.servers[0].run_tag}}-->
-<!--            </template>-->
+            <template slot-scope="scope">
+              <div v-for="item in scope.row.servers" v-if="item.run_tag">
+                {{ item.run_tag}}
+              </div>
+              <div v-else>
+                {{ scope.row.run_tag}}
+              </div>
+            </template>
           </el-table-column>
           <el-table-column prop="online" label="上下线" width="75px" align="center">
             <template scope="scope">
@@ -93,7 +99,7 @@
 <script>
 
 import {
-  getUsers, deleteUsers, updateUser, editUsers, getService, deleteService, addProcess
+  getUsers, deleteUsers, updateUser, editUsers, getService, deleteService, addProcess, svcCheck
 } from "@/api";
 
 export default {
@@ -201,15 +207,48 @@ export default {
       this.on_submit_loading = false
       this.load_data = false
     },
-    helthCheckClick(){
-      this.tableData.forEach((item) => {
-        console.log(item)
-        item.servers.forEach((server) => {
-          server.health = "200"
-          server.run_time = 'Up 7 weeks'
+    async helthCheckClick(){
+      if (this.multipleSelection.length === 0) {
+        this.$message({type: "warning", message: "选择不能为空"})
+        return
+      }
+      console.log(this.multipleSelection)
+      let reqs = []
+      for (const i in this.multipleSelection){
+        let obj = this.multipleSelection[i]
+        // let data = {
+        //   id : obj.id,
+        //   inner_ip: obj.inner_ip,
+        //   docker_port: obj.docker_port,
+        //   svc: obj.services
+        // }
+        var response = await svcCheck({id: obj.id}).catch(() => {
+          this.$message({type: "error", message: "请求失败"})
+          return 0
         })
-
-      })
+        if (response.code === 401){
+          this.multipleSelection[i].host_status = "异常"
+        }else if (response.code !== 200){
+          this.$message({type: "error", message: response.msg})
+        } else {
+          // this.$message({type: "success", message: response.msg})
+          this.multipleSelection[i].servers = response.data
+        }
+        // let req = new Promise((resolve, reject) =>{
+        //   svcCheck(data).then( res => {
+        //     resolve(res)
+        //   }).catch(err=>{
+        //     reject(err)
+        //   })
+        // })
+        // reqs.push(req)
+      }
+      // this.tableData.forEach((item) => {
+      //   item.servers.forEach((server) => {
+      //     server.health = "200"
+      //     server.run_time = 'Up 7 weeks'
+      //   })
+      // })
     },
     async deployClick(row){
       var response = await addProcess({"id": row.id}).catch(() => {

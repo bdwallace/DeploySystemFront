@@ -268,9 +268,9 @@ export function getTagList(params){
 
 
 
-export function getApiGroup(params){
+export function svcCheck(params){
   return axios({
-    url: '/api_group',
+    url: '/svc_check',
     method: 'get',
     params: params
   })
@@ -284,11 +284,28 @@ export function dockerCheck(data){
   })
 }
 
-export function getLogs(params){
+export function commitTag(data){
   return axios({
-    url: '/logs',
+    url: '/deploy',
+    method: 'patch',
+    data
+  })
+}
+
+export function getLog(params){
+  return axios({
+    url: '/deploy',
     method: 'get',
-    params: params
+    params
+  })
+}
+
+
+export function commitDeployTask(data){
+  return axios({
+    url: '/deploy',
+    method: 'post',
+    data
   })
 }
 
