@@ -309,3 +309,11 @@ export function commitDeployTask(data){
   })
 }
 
+
+export function serviceOption(data){
+  return axios({
+    url: '/option',
+    method: 'post',
+    data
+  })
+}

@@ -33,13 +33,13 @@
                 <el-tag size="small" style="margin-right: 3px;width: 83px" v-if="item.run_time==='未知' || item.run_time===''" type="warning" >未知</el-tag>
                 <el-tag size="small" style="margin-right: 3px;width: 83px" v-else-if="item.run_time.indexOf('exited')===0" type="danger" >{{ item.run_time }}</el-tag>
                 <el-tag size="small" style="margin-right: 3px;" v-else>{{ item.run_time }}</el-tag>
-                <el-tooltip effect="light" content="http://54.179.119.160:8134/login" placement="left" style="margin-right: 5px">
-                  <el-tag v-if="item.health==='200'" size="small" type="success" >健康</el-tag>
+                <el-tooltip effect="light" :content="item.url" placement="left" style="margin-right: 5px">
+                  <el-tag v-if="item.health===200" size="small" type="success" >健康</el-tag>
                   <el-tag v-else-if="item.health==='未知'" size="small" type="warning">未知</el-tag>
                   <el-tag v-else type="danger" size="small">异常</el-tag>
                 </el-tooltip>
-                <el-button size="mini" type="primary" @click="restartClick(item)">重启</el-button>
-                <el-button size="mini" type="primary" @click="closeClick(item)" style="margin-left: 3px">关闭</el-button>
+                <el-button size="mini" type="primary" @click="restartClick(scope.row, item)">重启</el-button>
+                <el-button size="mini" type="primary" @click="closeClick(scope.row, item)" style="margin-left: 3px">关闭</el-button>
               </div>
             </template>
           </el-table-column>
@@ -99,7 +99,7 @@
 <script>
 
 import {
-  getUsers, deleteUsers, updateUser, editUsers, getService, deleteService, addProcess, svcCheck
+  getUsers, deleteUsers, updateUser, editUsers, getService, deleteService, addProcess, svcCheck, serviceOption
 } from "@/api";
 
 export default {
@@ -283,11 +283,73 @@ export default {
       // console.log(response.data)
       this.$router.push('/services/deploy/' + response.data.task_id)
     },
-    restartClick(item){
+    async restartClick(row, item){
+      let data = {
+        svc_name: row.svc_name,
+        docker_port: row.docker_port,
+        opt_type: 'restart',
+        host: item
+      }
+      console.log(data)
+      var response = await serviceOption(data).catch(() => {
+        this.$message({type: "error", message: "请求失败"})
+        return 0
+      })
+      if (response.code !== 200){
+        this.$message({type: "error", message: response.msg})
+        return
+      } else {
+        this.$message({type: "success", message: response.msg})
+      }
+
+      var response = await svcCheck({id: row.id}).catch(() => {
+          this.$message({type: "error", message: "请求失败"})
+          return 0
+        })
+        if (response.code === 401){
+          this.multipleSelection[i].host_status = "异常"
+        }else if (response.code !== 200){
+          this.$message({type: "error", message: response.msg})
+        } else {
+          // this.$message({type: "success", message: response.msg})
+          var index = this.tableData.indexOf(row)
+          this.tableData[index].servers = response.data
+        }
 
     },
-    closeClick(item){
+    async closeClick(row, item){
+      let data = {
+        svc_name: row.svc_name,
+        docker_port: row.docker_port,
+        opt_type: 'stop',
+        host: item
+      }
+      console.log(data)
+      var response = await serviceOption(data).catch(() => {
+        this.$message({type: "error", message: "请求失败"})
+        return 0
+      })
+      if (response.code !== 200){
+        this.$message({type: "error", message: response.msg})
+        return
+      } else {
+        this.$message({type: "success", message: response.msg})
+      }
 
+
+      var response = await svcCheck({id: row.id}).catch(() => {
+          this.$message({type: "error", message: "请求失败"})
+          return 0
+        })
+        if (response.code === 401){
+          this.multipleSelection[i].host_status = "异常"
+        }else if (response.code !== 200){
+          this.$message({type: "error", message: response.msg})
+        } else {
+          // this.$message({type: "success", message: response.msg})
+          var index = this.tableData.indexOf(row)
+          this.tableData[index].servers = response.data
+        }
     }
 
 

@@ -32,9 +32,9 @@
                 </el-option>
               </el-select>
 
-              <el-tooltip  placement="bottom" :content="scope.row.run_tag">
+              <el-tooltip  placement="bottom" :content="scope.row.old_tag">
                 <el-button type="success" size="mini" style="width: 50px" v-if="!tag_post"
-                         @click="scope.row.new_tag = scope.row.run_tag" >回退</el-button>
+                         @click="scope.row.new_tag = scope.row.old_tag" >回退</el-button>
               </el-tooltip>
 
 
@@ -68,7 +68,8 @@
                   <el-tag v-else-if="item.health==='未知'" size="small" type="warning">未知</el-tag>
                   <el-tag v-else type="danger" size="small">异常</el-tag>
                 </el-tooltip>
-
+                <el-button size="mini" type="primary" @click="restartClick(scope.row, item)">重启</el-button>
+                <el-button size="mini" type="primary" @click="closeClick(scope.row, item)" style="margin-left: 3px">关闭</el-button>
               </div>
             </template>
           </el-table-column>
@@ -86,9 +87,9 @@
                   </el-button>
                   <el-button @click="tag_post=false">取消</el-button>
 
-                  <el-button type="danger" @click="is_backDialog = true" style="float: right">
-                      回退发布单
-                  </el-button>
+<!--                  <el-button type="danger" @click="is_backDialog = true" style="float: right">-->
+<!--                      回退发布单-->
+<!--                  </el-button>-->
 
                   <el-button type="danger"  style="float: right;margin-right:30px"
                       @click="on_submit_form(false)" >全部发布
@@ -114,7 +115,7 @@
 
 <script>
 
-import {commitDeployTask, commitTag, getLog, getProcess, getTagList, svcCheck} from "@/api";
+import {commitDeployTask, commitTag, getLog, getProcess, getTagList, serviceOption, svcCheck} from "@/api";
 
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
@@ -130,7 +131,7 @@ export default {
       itemCount: [],
       params: {page: 1, pagesize: 15, total: 0, search: ""},
       all_release: [
-          {id: 1, tag: "RLS_LOTTERY_20230620_01"},{id: 2, tag: "dev-temp"},{id: 3, tag: "RLS_OK_20230817_02"},{id: 1, tag: "RLS_LOTTERY_20230620_01"},
+          // {id: 1, tag: "RLS_LOTTERY_20230620_01"},{id: 2, tag: "dev-temp"},{id: 3, tag: "RLS_OK_20230817_02"},{id: 1, tag: "RLS_LOTTERY_20230620_01"},
       ],
       tableData: [
         // {svc_name: "eureka", port: "8134:8134", envir: "预生产hgjdfgjjklyil", platform: "aozhou_kaijiang", tag: "", release: [{id: 1, tag_name: "RLS_LOTTERY_20230620_01"},{id: 2, tag_name: "dev-temp"},{id: 3, tag_name: "RLS_OK_20230817_02"},{id: 4, tag_name: "RLS_LOTTERY_20230620_03"}], servers: [
@@ -140,12 +141,13 @@ export default {
       showText: [
         // {color: '#00ff00', text: "daf550de2b27fa8226b5344bc5dae972db368148736d10118521c21642461f99"},
         // {color: '#FDFEFE', text: "daf550de2b27fa8226b5344bc5dae972db368148736d10118521c21642461f99"},
-      ]
+      ],
+      timer: null
     }
   },
   created() {
     this.fetchData();
-    this.getLog();
+    // this.getLog();
   },
   methods: {
     currentChange(page) {
@@ -183,9 +185,10 @@ export default {
         }else {
           item.release = resp.data
         }
+        this.tableData.push(item)
         this.checkClick(item)
       }
-      this.tableData = data
+      // this.tableData = data
       console.log(this.tableData)
 
 
@@ -194,11 +197,13 @@ export default {
       // console.log(this.tableData)
       var resp = await commitTag(this.tableData)
       if (resp.code !== 200){
-          this.$message({type: 'warning', message: resp.msg})
-        }else {
-          this.$message({type: 'success', message: resp.msg})
-        }
-      this.tag_post = true
+        this.$message({type: 'warning', message: resp.msg})
+
+      }else {
+        this.$message({type: 'success', message: resp.msg})
+        this.tag_post = true
+      }
+
     },
     async checkClick(row){
       // console.log(row)
@@ -228,6 +233,9 @@ export default {
         this.$message({type: 'warning', message: resp.msg})
       }else {
         this.$message({type: 'success', message: resp.msg})
+        this.timer = setInterval(() => {
+          setTimeout(this.getLog,1)
+        }, 60*30)
       }
     },
     check_tag(){},
@@ -241,7 +249,7 @@ export default {
       let text_list = resp.data.text.split("\n")
       text_list.forEach(item => {
         let i = {}
-        console.log(item.indexOf('成功'))
+        // console.log(item.indexOf('成功'))
         if (item.indexOf('成功')!==-1){
 
           i.color = '#00ff00'
@@ -252,8 +260,86 @@ export default {
           i.text = item
           this.showText.push(i)
         }
+        if (item.indexOf('发布成功')!==-1 || item.indexOf('发布失败')!==-1){
+          clearInterval(this.timer)
+          this.timer = null
+        }
+
       })
-    }
+    },
+    async restartClick(row, item){
+      let data = {
+        svc_name: row.svc_name,
+        docker_port: row.docker_port,
+        opt_type: 'restart',
+        host: item
+      }
+      console.log(data)
+      var response = await serviceOption(data).catch(() => {
+        this.$message({type: "error", message: "请求失败"})
+        return 0
+      })
+      if (response.code !== 200){
+        this.$message({type: "error", message: response.msg})
+        return
+      } else {
+        this.$message({type: "success", message: response.msg})
+      }
+
+      var response = await svcCheck({id: row.id}).catch(() => {
+          this.$message({type: "error", message: "请求失败"})
+          return 0
+        })
+        if (response.code === 401){
+          this.multipleSelection[i].host_status = "异常"
+        }else if (response.code !== 200){
+          this.$message({type: "error", message: response.msg})
+        } else {
+          // this.$message({type: "success", message: response.msg})
+          var index = this.tableData.indexOf(row)
+          this.tableData[index].servers = response.data
+        }
+
+    },
+    async closeClick(row, item){
+      let data = {
+        svc_name: row.svc_name,
+        docker_port: row.docker_port,
+        opt_type: 'stop',
+        host: item
+      }
+      console.log(data)
+      var response = await serviceOption(data).catch(() => {
+        this.$message({type: "error", message: "请求失败"})
+        return 0
+      })
+      if (response.code !== 200){
+        this.$message({type: "error", message: response.msg})
+        return
+      } else {
+        this.$message({type: "success", message: response.msg})
+      }
+
+
+      var response = await svcCheck({id: row.id}).catch(() => {
+          this.$message({type: "error", message: "请求失败"})
+          return 0
+        })
+        if (response.code === 401){
+          this.multipleSelection[i].host_status = "异常"
+        }else if (response.code !== 200){
+          this.$message({type: "error", message: response.msg})
+        } else {
+          // this.$message({type: "success", message: response.msg})
+          var index = this.tableData.indexOf(row)
+          this.tableData[index].servers = response.data
+        }
+    },
+  },
+
+  beforeDestroy() {
+    clearInterval(this.timer)
+    this.timer = null
   }
 }
 </script>
