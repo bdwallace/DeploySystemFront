@@ -55,9 +55,9 @@
           </el-table-column>
           <el-table-column prop="online" label="上下线" width="75px" align="center">
             <template scope="scope">
-              <div v-for="item in scope.row.servers">
+              <div v-for="item in scope.row.servers" v-if="item.online">
                 <el-tooltip :content="item.online" placement="top" >
-                  <el-switch v-model="item.online" v-if="item.svc_type==='java'"
+                  <el-switch v-model="item.online" v-if="item.svc_type==='java' || item.online"
                     active-color="#13ce66"
                     inactive-color="#ff4949"
                     active-value="上线"
