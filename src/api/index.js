@@ -317,3 +317,12 @@ export function serviceOption(data){
     data
   })
 }
+
+
+export function lineChange(data){
+  return axios({
+    url: '/option',
+    method: 'patch',
+    data
+  })
+}

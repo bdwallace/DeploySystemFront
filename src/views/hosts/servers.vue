@@ -290,6 +290,7 @@ export default {
         console.log(obj)
         let data = {
           id : obj.id,
+          public_ip: obj.public_ip,
           inner_ip: obj.inner_ip,
           // docker_port: obj.docker_port,
           svc: obj.services
@@ -306,7 +307,7 @@ export default {
       }
       this.$message({type: "success", message: "检测中,请稍后"})
       Promise.all(reqs).then( res => {
-        console.log(res)
+        // console.log(res)
         for (const i in res){
           if (res[i].code === 401){
             this.multipleSelection[i].host_status = "异常"
@@ -317,8 +318,9 @@ export default {
             this.multipleSelection[i].services = res[i].data.svc
           }
         }
+        this.$message({type: "success", message: "检测已完成"})
       })
-      this.$message({type: "success", message: "检测已完成"})
+
     }
   }
 }

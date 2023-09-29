@@ -31,10 +31,10 @@
                 <el-tag size="small" style="margin-right: 3px;width: 110px;margin-top: 3px" >{{ item.public_ip }}</el-tag>
                 <el-tag size="small" style="margin-right: 3px;width: 110px" type="info">{{ item.inner_ip }}</el-tag>
                 <el-tag size="small" style="margin-right: 3px;width: 83px" v-if="item.run_time==='未知' || item.run_time===''" type="warning" >未知</el-tag>
-                <el-tag size="small" style="margin-right: 3px;width: 83px" v-else-if="item.run_time.indexOf('exited')===0" type="danger" >{{ item.run_time }}</el-tag>
-                <el-tag size="small" style="margin-right: 3px;" v-else>{{ item.run_time }}</el-tag>
-                <el-tooltip effect="light" content="http://54.179.119.160:8134/login" placement="left" style="margin-right: 5px">
-                  <el-tag v-if="item.health==='200'" size="small" type="success" >健康</el-tag>
+                <el-tag size="small" style="margin-right: 3px;width: 83px" v-else-if="item.run_time.indexOf('exited')===0 || item.run_time.indexOf('restart')===0" type="danger" >{{ item.run_time }}</el-tag>
+                <el-tag size="small" style="margin-right: 3px;width: 83px" v-else>{{ item.run_time }}</el-tag>
+                <el-tooltip effect="light" :content="item.url" placement="left" style="margin-right: 5px">
+                  <el-tag v-if="item.health===200" size="small" type="success" >健康</el-tag>
                   <el-tag v-else-if="item.health==='未知'" size="small" type="warning">未知</el-tag>
                   <el-tag v-else type="danger" size="small">异常</el-tag>
                 </el-tooltip>
@@ -45,21 +45,25 @@
           </el-table-column>
           <el-table-column prop="run_tag" label="运行版本" width="240px" align="center">
             <template slot-scope="scope">
-              <div v-for="item in scope.row.servers">
+              <div v-for="item in scope.row.servers" v-if="item.run_tag">
                 {{ item.run_tag}}
+              </div>
+              <div v-else>
+                {{ scope.row.run_tag}}
               </div>
             </template>
           </el-table-column>
           <el-table-column prop="online" label="上下线" width="75px" align="center">
             <template scope="scope">
-              <div v-for="item in scope.row.servers">
+              <div v-for="item in scope.row.servers" >
+                {{item.online}}
                 <el-tooltip :content="item.online" placement="top">
-                  <el-switch v-model="item.online"
+                  <el-switch v-model="item.online" v-if="item.svc_type==='java'"
                     active-color="#13ce66"
                     inactive-color="#ff4949"
                     active-value="上线"
                     inactive-value="下线"
-                    @change="linechange(scope.row)">
+                    @change="linechange(scope.row, item)">
                   </el-switch>
                 </el-tooltip>
               </div>
@@ -96,7 +100,7 @@
 <script>
 
 import {
-  svcCheck, getService, deleteService, addProcess, dockerCheck, serviceOption
+  svcCheck, getService, deleteService, addProcess, dockerCheck, serviceOption, lineChange
 } from "@/api";
 
 export default {
@@ -156,6 +160,7 @@ export default {
         return 0
       }else {
         this.tableData = resp.data
+        console.log(this.tableData)
         this.params.total = resp.total
       }
 
@@ -196,13 +201,27 @@ export default {
       this.$router.push('/services/cs/0')
     },
     editUserCommit(){},
-    linechange(){
-      this.on_submit_loading = true
-      this.load_data = true
-      // let host_port = host + ":" + service.Port.split(",")[0].split(":")[0]
+    async linechange(row, item){
+      let data = {
+        project: row.project,
+        online: item.online,
+        host_port: item.inner_ip + ":" + row.svc_port.split(':')[0],
+      }
 
-      this.on_submit_loading = false
-      this.load_data = false
+      var response = await lineChange(data).catch(() =>{
+        this.$message({type: 'error', message: "请求错误"});
+        return
+      })
+      if (response.code === 200) {
+        this.$message({type: 'success', message: response.msg});
+      } else {
+        if (item.online === "上线"){
+
+          item.online="下线"
+        }
+        else if(item.online === "下线"){item.online='上线'}
+        this.$message({type: 'error', message: response.msg});
+      }
     },
     async svcCheckCommit(i, data){
       var response = await svcCheck(data).catch(() => {
@@ -243,7 +262,8 @@ export default {
           this.$message({type: "error", message: response.msg})
         } else {
           // this.$message({type: "success", message: response.msg})
-          this.multipleSelection[i].services = response.data.svc
+          this.multipleSelection[i].servers = response.data
+          console.log(this.multipleSelection[i])
         }
         // let req = new Promise((resolve, reject) =>{
         //   svcCheck(data).then( res => {

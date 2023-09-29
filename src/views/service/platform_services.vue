@@ -31,8 +31,8 @@
                 <el-tag size="small" style="margin-right: 3px;width: 110px;margin-top: 3px" >{{ item.public_ip }}</el-tag>
                 <el-tag size="small" style="margin-right: 3px;width: 110px" type="info">{{ item.inner_ip }}</el-tag>
                 <el-tag size="small" style="margin-right: 3px;width: 83px" v-if="item.run_time==='未知' || item.run_time===''" type="warning" >未知</el-tag>
-                <el-tag size="small" style="margin-right: 3px;width: 83px" v-else-if="item.run_time.indexOf('exited')===0" type="danger" >{{ item.run_time }}</el-tag>
-                <el-tag size="small" style="margin-right: 3px;" v-else>{{ item.run_time }}</el-tag>
+                <el-tag size="small" style="margin-right: 3px;width: 83px" v-else-if="item.run_time.indexOf('exited')===0 || item.run_time.indexOf('restart')===0" type="danger" >{{ item.run_time }}</el-tag>
+                <el-tag size="small" style="margin-right: 3px;width: 83px" v-else>{{ item.run_time }}</el-tag>
                 <el-tooltip effect="light" :content="item.url" placement="left" style="margin-right: 5px">
                   <el-tag v-if="item.health===200" size="small" type="success" >健康</el-tag>
                   <el-tag v-else-if="item.health==='未知'" size="small" type="warning">未知</el-tag>
@@ -56,13 +56,13 @@
           <el-table-column prop="online" label="上下线" width="75px" align="center">
             <template scope="scope">
               <div v-for="item in scope.row.servers">
-                <el-tooltip :content="item.online" placement="top">
-                  <el-switch v-model="item.online"
+                <el-tooltip :content="item.online" placement="top" >
+                  <el-switch v-model="item.online" v-if="item.svc_type==='java'"
                     active-color="#13ce66"
                     inactive-color="#ff4949"
                     active-value="上线"
                     inactive-value="下线"
-                    @change="linechange(scope.row)">
+                    @change="linechange(scope.row, item)">
                   </el-switch>
                 </el-tooltip>
               </div>
@@ -99,7 +99,16 @@
 <script>
 
 import {
-  getUsers, deleteUsers, updateUser, editUsers, getService, deleteService, addProcess, svcCheck, serviceOption
+  getUsers,
+  deleteUsers,
+  updateUser,
+  editUsers,
+  getService,
+  deleteService,
+  addProcess,
+  svcCheck,
+  serviceOption,
+  lineChange
 } from "@/api";
 
 export default {
@@ -186,10 +195,10 @@ export default {
       this.editData['mfa_on'] = row.mfa_on
       var response = await updateUser(params)
       if (response.code === 200) {
-          this.$message({type: 'success', message: response.msg});
-        } else {
-          this.$message({type: 'error', message: response.msg});
-        }
+        this.$message({type: 'success', message: response.msg});
+      } else {
+        this.$message({type: 'error', message: response.msg});
+      }
     },
     editClick(row){
       this.editData = row
@@ -199,13 +208,24 @@ export default {
       this.$router.push('/services/cs/0')
     },
     editUserCommit(){},
-    linechange(){
-      this.on_submit_loading = true
-      this.load_data = true
-      // let host_port = host + ":" + service.Port.split(",")[0].split(":")[0]
+    async linechange(row, item){
+      let data = {
+        project: row.project,
+        online: item.online,
+        host_port: item.inner_ip + ":" + row.svc_port.split(':')[0],
+      }
 
-      this.on_submit_loading = false
-      this.load_data = false
+      var response = await lineChange(data).catch(() =>{
+        this.$message({type: 'error', message: "请求错误"});
+        return
+      })
+      if (response.code === 200) {
+        this.$message({type: 'success', message: response.msg});
+      } else {
+        if (item.online === "上线"){item.online="下线"}
+        else {item.online='上线'}
+        this.$message({type: 'error', message: response.msg});
+      }
     },
     async helthCheckClick(){
       if (this.multipleSelection.length === 0) {

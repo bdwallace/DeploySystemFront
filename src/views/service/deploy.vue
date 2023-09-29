@@ -54,7 +54,7 @@
                     inactive-color="#ff4949"
                     active-value="上线"
                     inactive-value="下线"
-                    @change="linechange(scope.row)">
+                    @change="linechange(scope.row, item)">
                   </el-switch>
                 </el-tooltip>
                 <el-tag size="small" style="margin-right: 3px;width: 110px;margin-top: 3px" >{{ item.public_ip }}</el-tag>
@@ -115,7 +115,7 @@
 
 <script>
 
-import {commitDeployTask, commitTag, getLog, getProcess, getTagList, serviceOption, svcCheck} from "@/api";
+import {commitDeployTask, commitTag, getLog, getProcess, getTagList, lineChange, serviceOption, svcCheck} from "@/api";
 
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
@@ -192,6 +192,25 @@ export default {
       console.log(this.tableData)
 
 
+    },
+    async linechange(row, item){
+      let data = {
+        project: row.project,
+        online: item.online,
+        host_port: item.inner_ip + ":" + row.svc_port.split(':')[0],
+      }
+
+      var response = await lineChange(data).catch(() =>{
+        this.$message({type: 'error', message: "请求错误"});
+        return
+      })
+      if (response.code === 200) {
+        this.$message({type: 'success', message: response.msg});
+      } else {
+        if (item.online === "上线"){item.online="下线"}
+        else {item.online='上线'}
+        this.$message({type: 'error', message: response.msg});
+      }
     },
     async commitTag(){
       // console.log(this.tableData)
