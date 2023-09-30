@@ -98,6 +98,13 @@ export const constantRoutes = [
         hidden: true,
         meta: { title: '发布服务', icon: 'iconfont icon-yonghuguanli' }
       },
+        {
+        path: 'upload/:id',
+        component: () => import('@/views/service/upload_svc.vue'),
+        name: '服务上传与编译',
+        hidden: true,
+        meta: { title: '服务上传与编译', icon: 'iconfont icon-yonghuguanli' }
+      },
     ]
   },
   {

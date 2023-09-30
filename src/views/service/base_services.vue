@@ -237,7 +237,7 @@ export default {
         this.multipleSelection[i].services = response.data.svc
       }
     },
-    async helthCheckClick(){
+    helthCheckClick(){
       if (this.multipleSelection.length === 0) {
         this.$message({type: "warning", message: "选择不能为空"})
         return
@@ -252,19 +252,21 @@ export default {
         //   docker_port: obj.docker_port,
         //   svc: obj.services
         // }
-        var response = await svcCheck({id: obj.id}).catch(() => {
+        var response = svcCheck({id: obj.id}).catch(() => {
           this.$message({type: "error", message: "请求失败"})
           return 0
+        }).then(resp =>{
+          if (resp.code === 401){
+            this.multipleSelection[i].host_status = "异常"
+          }else if (resp.code !== 200){
+            this.$message({type: "error", message: resp.msg})
+          } else {
+            // this.$message({type: "success", message: response.msg})
+            this.multipleSelection[i].servers = resp.data
+            console.log(this.multipleSelection[i])
+          }
         })
-        if (response.code === 401){
-          this.multipleSelection[i].host_status = "异常"
-        }else if (response.code !== 200){
-          this.$message({type: "error", message: response.msg})
-        } else {
-          // this.$message({type: "success", message: response.msg})
-          this.multipleSelection[i].servers = response.data
-          console.log(this.multipleSelection[i])
-        }
+
         // let req = new Promise((resolve, reject) =>{
         //   svcCheck(data).then( res => {
         //     resolve(res)
@@ -280,6 +282,7 @@ export default {
       //     server.run_time = 'Up 7 weeks'
       //   })
       // })
+      // this.$message({type: "success", message: "检测完成"})
     },
     async deployClick(row){
       var response = await addProcess({"id": row.id}).catch(() => {

@@ -326,3 +326,12 @@ export function lineChange(data){
     data
   })
 }
+
+
+export function uploadCode(data){
+  return axios({
+    url: '/upload_build',
+    method: 'post',
+    data
+  })
+}

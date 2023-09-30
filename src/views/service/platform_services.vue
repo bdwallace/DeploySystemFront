@@ -40,6 +40,8 @@
                 </el-tooltip>
                 <el-button size="mini" type="primary" @click="restartClick(scope.row, item)">重启</el-button>
                 <el-button size="mini" type="primary" @click="closeClick(scope.row, item)" style="margin-left: 3px">关闭</el-button>
+                <el-button size="small" type="text" @click="download(item)" v-if="item.svc_type.indexOf('download')===0">下载</el-button>
+                <el-button size="small" type="text" @click="upload(scope.row)" v-if="item.svc_type.indexOf('download')===0">上传</el-button>
               </div>
             </template>
           </el-table-column>
@@ -56,6 +58,7 @@
           <el-table-column prop="online" label="上下线" width="75px" align="center">
             <template scope="scope">
               <div v-for="item in scope.row.servers" v-if="item.online">
+
                 <el-tooltip :content="item.online" placement="top" >
                   <el-switch v-model="item.online" v-if="item.svc_type==='java' || item.online"
                     active-color="#13ce66"
@@ -227,7 +230,7 @@ export default {
         this.$message({type: 'error', message: response.msg});
       }
     },
-    async helthCheckClick(){
+    helthCheckClick(){
       if (this.multipleSelection.length === 0) {
         this.$message({type: "warning", message: "选择不能为空"})
         return
@@ -242,18 +245,20 @@ export default {
         //   docker_port: obj.docker_port,
         //   svc: obj.services
         // }
-        var response = await svcCheck({id: obj.id}).catch(() => {
+        svcCheck({id: obj.id}).catch(() => {
           this.$message({type: "error", message: "请求失败"})
           return 0
+        }).then(response => {
+          if (response.code === 401){
+            this.multipleSelection[i].host_status = "异常"
+          }else if (response.code !== 200){
+            this.$message({type: "error", message: response.msg})
+          } else {
+            // this.$message({type: "success", message: response.msg})
+            this.multipleSelection[i].servers = response.data
+          }
         })
-        if (response.code === 401){
-          this.multipleSelection[i].host_status = "异常"
-        }else if (response.code !== 200){
-          this.$message({type: "error", message: response.msg})
-        } else {
-          // this.$message({type: "success", message: response.msg})
-          this.multipleSelection[i].servers = response.data
-        }
+
         // let req = new Promise((resolve, reject) =>{
         //   svcCheck(data).then( res => {
         //     resolve(res)
@@ -269,6 +274,7 @@ export default {
       //     server.run_time = 'Up 7 weeks'
       //   })
       // })
+      // this.$message({type: "success", message: "检测完成"})
     },
     async deployClick(row){
       var response = await addProcess({"id": row.id}).catch(() => {
@@ -370,9 +376,11 @@ export default {
           var index = this.tableData.indexOf(row)
           this.tableData[index].servers = response.data
         }
-    }
-
-
+    },
+    upload(row){
+      this.$router.push('/services/upload/' + row.id)
+    },
+    download(){},
   }
 }
 </script>
