@@ -319,6 +319,7 @@ export default {
         svc_name: '',
         alias: "",
         svc_port: "",
+        docker_name: "",
         image_harbor: "",
         template_name: "",
         logkeyword: "Started .* seconds",
@@ -516,6 +517,10 @@ export default {
           this.$message({type: 'warning', message: '服务端口不能为空'})
         }else if (!this.formData.docker_network){
           this.$message({type: 'warning', message: '容器网络不能为空'})
+        }else if (!this.formData.docker_name){
+          this.$message({type: 'warning', message: '容器名不能为空'})
+          this.dialogAddVisable = false
+          return
         }
         delete this.formData.template_name
         delete this.formData.is_template

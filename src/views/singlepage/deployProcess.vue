@@ -17,7 +17,7 @@
 
           <el-table-column type="selection" width="40"></el-table-column>
           <el-table-column prop="deploy_user" label="发布用户" width="100" align="center"></el-table-column>
-          <el-table-column prop="svc_name" label="服务名称" fit align="center">
+          <el-table-column prop="svc_name" label="服务名称" width="200" align="center">
             <template slot-scope="scope">
               <div v-for="item in scope.row.services">
                 <el-tag  size="mini" style="margin-right: 3px">{{ item.svc_name }}</el-tag>
@@ -53,7 +53,7 @@
 
             </template>
           </el-table-column>
-          <el-table-column prop="create_time" label="发布时间" width="150" align="center"></el-table-column>
+          <el-table-column prop="create_time" label="发布时间" width="200" align="center"></el-table-column>
           <el-table-column prop="deploy_status" label="发布状态" width="100" align="center">
             <template slot-scope="scope" >
               <el-button v-if="scope.row.deploy_status==='发布成功'" circle type='success' icon="el-icon-check" size="mini"> </el-button>

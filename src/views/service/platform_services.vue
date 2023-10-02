@@ -40,7 +40,7 @@
                 </el-tooltip>
                 <el-button size="mini" type="primary" @click="restartClick(scope.row, item)">重启</el-button>
                 <el-button size="mini" type="primary" @click="closeClick(scope.row, item)" style="margin-left: 3px">关闭</el-button>
-                <el-button size="small" type="text" @click="download(item)" v-if="item.svc_type.indexOf('download')===0">下载</el-button>
+                <el-button size="small" type="text" @click="download(scope.row)" v-if="item.svc_type.indexOf('download')===0">下载</el-button>
                 <el-button size="small" type="text" @click="upload(scope.row)" v-if="item.svc_type.indexOf('download')===0">上传</el-button>
               </div>
             </template>
@@ -111,7 +111,7 @@ import {
   addProcess,
   svcCheck,
   serviceOption,
-  lineChange
+  lineChange, codeDownload
 } from "@/api";
 
 export default {
@@ -235,7 +235,7 @@ export default {
         this.$message({type: "warning", message: "选择不能为空"})
         return
       }
-      console.log(this.multipleSelection)
+      // console.log(this.multipleSelection)
       let reqs = []
       for (const i in this.multipleSelection){
         let obj = this.multipleSelection[i]
@@ -380,7 +380,19 @@ export default {
     upload(row){
       this.$router.push('/services/upload/' + row.id)
     },
-    download(){},
+    async download(row){
+      var response = await codeDownload({file_name: row.svc_name + '.zip'}).catch(() => {
+        this.$message({type: "error", message: "请求失败"})
+        return 0
+      })
+      const url = window.URL.createObjectURL(new Blob([response]))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute("download", row.svc_name+'.zip')
+
+      link.click()
+      window.URL.revokeObjectURL(url)
+    },
   }
 }
 </script>

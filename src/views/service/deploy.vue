@@ -266,6 +266,7 @@ export default {
 
       }
       let text_list = resp.data.text.split("\n")
+      this.showText = []
       text_list.forEach(item => {
         let i = {}
         // console.log(item.indexOf('成功'))

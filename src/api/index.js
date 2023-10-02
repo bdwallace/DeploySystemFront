@@ -335,3 +335,29 @@ export function uploadCode(data){
     data
   })
 }
+
+export function buildCode(data){
+  return axios({
+    url: '/upload_build',
+    method: 'patch',
+    data
+  })
+}
+
+export function buildLog(params){
+  return axios({
+    url: '/upload_build',
+    method: 'get',
+    params
+  })
+}
+
+
+export function codeDownload(params){
+  return axios({
+    url: '/codedownload',
+    method: 'get',
+    responseType: "blob",
+    params
+  })
+}
