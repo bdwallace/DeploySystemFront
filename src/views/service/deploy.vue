@@ -147,7 +147,7 @@ export default {
   },
   created() {
     this.fetchData();
-    // this.getLog();
+    this.getLog();
   },
   methods: {
     currentChange(page) {
@@ -259,11 +259,13 @@ export default {
     },
     check_tag(){},
     async getLog(){
-      var resp = await getLog({id: this.task_id})
+      var resp = await getLog({id: this.task_id}).catch(error => {
+        console.log(error)
+      })
       if (resp.code !== 200){
-        this.$message({type: 'warning', message: resp.msg})
-      }else {
-
+        return
+      }else if (resp.msg === "日志已过期"){
+        return
       }
       let text_list = resp.data.text.split("\n")
       this.showText = []

@@ -8,5 +8,5 @@ RUN npm install && npm run build
 # 运行镜像
 FROM nginx:latest
 COPY --from=0 /usr/local/dist /usr/share/nginx/html
-COPY oss_system.conf /etc/nginx/conf.d/oss_system.conf
+COPY deploy_system.conf /etc/nginx/conf.d/deploy_system.conf
 EXPOSE 8080

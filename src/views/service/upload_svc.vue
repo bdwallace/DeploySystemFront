@@ -198,7 +198,7 @@ export default {
         // console.log(this.showText)
         this.formData.target_tag = resp.data.target_tag
         }).catch(() => {
-          this.$message({type: 'error', message: "请求错误"})
+          console.log("error")
         })
 
     }
