@@ -9,4 +9,4 @@ RUN npm install && npm run build
 FROM nginx:latest
 COPY --from=0 /usr/local/dist /usr/share/nginx/html
 COPY deploy_system.conf /etc/nginx/conf.d/deploy_system.conf
-EXPOSE 8080
+EXPOSE 8082
