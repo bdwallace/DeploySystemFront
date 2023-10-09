@@ -143,21 +143,33 @@ export default {
   },
   created() {
     const vm = this;
-    window.addEventListener('message', function(event) {
+    // 存储事件监听器的回调函数
+    const messageListener = function(event) {
       var receivedData = event.data;
+      console.log('事件监听已触发')
       console.log('Received data:', receivedData.user_name, receivedData.token);
-      if (receivedData.user_name){
-        console.log("用户状态数据已获取")
+      if (receivedData.user_name) {
         localStorage.setItem("user_name", receivedData.user_name);
         localStorage.setItem("token", receivedData.token);
         vm.fetchData();
+        window.removeEventListener('message', messageListener);
       }
+    };
 
-    });
+    // 添加事件监听器
+    window.onload = () => {
+      console.log("事件监听器添加中")
+      window.addEventListener('message', messageListener);
+      console.log("事件监听器添加成功")
+    }
+
     console.log('user:', localStorage.user_name)
-    setTimeout(() => {
-      this.fetchData()
-    }, 500)
+    this.$nextTick(() => {
+      setTimeout(() => {
+        this.fetchData();
+      }, 500)
+    })
+
     // this.fetchData()
   },
   methods: {
