@@ -142,7 +142,7 @@ export default {
 
   },
   created() {
-    const vm = this; // 创建一个变量来引用 Vue 实例
+    const vm = this;
     window.addEventListener('message', function(event) {
       var receivedData = event.data;
       console.log('Received data:', receivedData.user_name, receivedData.token);
@@ -155,9 +155,9 @@ export default {
 
     });
     console.log('user:', localStorage.user_name)
-    // setTimeout(() => {
-    //   this.fetchData()
-    // }, 500)
+    setTimeout(() => {
+      this.fetchData()
+    }, 500)
     // this.fetchData()
   },
   methods: {
