@@ -35,6 +35,16 @@ export default {
       username: localStorage.getItem("user_name"),
     }
   },
+  created() {
+    window.addEventListener('message', function(event) {
+      var receivedData = event.data;
+      console.log('Received data:', receivedData.user_name, receivedData.token);
+      if (receivedData.user_name){
+        localStorage.setItem("user_name", receivedData.user_name);
+        localStorage.setItem("token", receivedData.token);
+      }
+    });
+  },
   methods:{
     updateTitle(val){
       this.page_title = val

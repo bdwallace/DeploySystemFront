@@ -142,18 +142,11 @@ export default {
 
   },
   created() {
-    window.addEventListener('message', function(event) {
-      var receivedData = event.data;
-      console.log('Received data:', receivedData.user_name, receivedData.token);
-      if (receivedData.user_name){
-        localStorage.setItem("user_name", receivedData.user_name);
-        localStorage.setItem("token", receivedData.token);
-      }
-    });
-    setTimeout(() => {
-      this.fetchData()
-    }, 400)
 
+    // setTimeout(() => {
+    //   this.fetchData()
+    // }, 400)
+    this.fetchData()
   },
   methods: {
     currentChange(page){
