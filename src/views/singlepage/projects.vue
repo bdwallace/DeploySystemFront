@@ -150,6 +150,7 @@ export default {
         localStorage.setItem("token", receivedData.token);
       }
     });
+    console.log('user:', localStorage.user_name)
     setTimeout(() => {
       this.fetchData()
     }, 500)
