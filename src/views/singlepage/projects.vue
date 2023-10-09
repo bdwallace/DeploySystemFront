@@ -138,8 +138,22 @@ export default {
       ]
     }
   },
+  mounted() {
+
+  },
   created() {
-    this.fetchData()
+    window.addEventListener('message', function(event) {
+      var receivedData = event.data;
+      console.log('Received data:', receivedData.user_name, receivedData.token);
+      if (receivedData.user_name){
+        localStorage.setItem("user_name", receivedData.user_name);
+        localStorage.setItem("token", receivedData.token);
+      }
+    });
+    setTimeout(() => {
+      this.fetchData()
+    }, 400)
+
   },
   methods: {
     currentChange(page){
@@ -165,6 +179,7 @@ export default {
       }else {
         this.tableData = resp.data
         this.params.total = resp.total
+        this.$message({type: 'success', message: resp.msg})
       }
 
 

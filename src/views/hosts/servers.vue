@@ -265,20 +265,20 @@ export default {
       this.dialogEditVisable = false
       await this.fetchData()
     },
-    async dockerCheckCommit(i, data){
-      var response = await dockerCheck(data).catch(() => {
-        this.$message({type: "error", message: "请求失败"})
-        return 0
-      })
-      if (response.code === 401){
-        this.multipleSelection[i].host_status = "异常"
-      }else if (response.code !== 200){
-        this.$message({type: "error", message: response.msg})
-      } else {
-        // this.$message({type: "success", message: response.msg})
-        this.multipleSelection[i].services = response.data.svc
-      }
-    },
+    // async dockerCheckCommit(i, data){
+    //   var response = await dockerCheck(data).catch(() => {
+    //     this.$message({type: "error", message: "请求失败"})
+    //     return 0
+    //   })
+    //   if (response.code === 401){
+    //     this.multipleSelection[i].host_status = "异常"
+    //   }else if (response.code !== 200){
+    //     this.$message({type: "error", message: response.msg})
+    //   } else {
+    //     // this.$message({type: "success", message: response.msg})
+    //     this.multipleSelection[i].services = response.data.svc
+    //   }
+    // },
     async dockerCheckClick(){
       if (this.multipleSelection.length === 0) {
         this.$message({type: "warning", message: "选择不能为空"})
@@ -318,7 +318,7 @@ export default {
             this.multipleSelection[i].services = res[i].data.svc
           }
         }
-        this.$message({type: "success", message: "检测已完成"})
+        // this.$message({type: "success", message: "检测已完成"})
       })
 
     }
