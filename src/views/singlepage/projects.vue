@@ -158,11 +158,11 @@ export default {
       console.log("事件监听器添加成功")
       console.log('user:', localStorage.user_name)
 
-      this.$nextTick(() => {
-        setTimeout(() => {
-          this.fetchData();
-        }, 300)
-      })
+      // this.$nextTick(() => {
+      //   setTimeout(() => {
+      //     this.fetchData();
+      //   }, 300)
+      // })
     }else {
       this.fetchData();
     }
