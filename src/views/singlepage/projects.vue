@@ -163,6 +163,8 @@ export default {
           this.fetchData();
         }, 300)
       })
+    }else {
+      this.fetchData();
     }
 
     // this.fetchData();
