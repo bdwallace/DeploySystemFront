@@ -142,8 +142,8 @@ export default {
     const vm = this;
     const messageListener = function(event) {
       var receivedData = event.data;
-      console.log('事件监听已触发')
-      console.log('Received data:', receivedData.user_name, receivedData.token);
+      // console.log('事件监听已触发')
+      // console.log('Received data:', receivedData.user_name, receivedData.token);
       if (receivedData.user_name) {
         localStorage.setItem("user_name", receivedData.user_name);
         localStorage.setItem("token", receivedData.token);
@@ -153,11 +153,9 @@ export default {
     }
     // 添加事件监听器
     if (!localStorage.user_name){
-      console.log("事件监听器添加中")
+      // console.log("事件监听器添加中")
       window.addEventListener('message', messageListener);
-      console.log("事件监听器添加成功")
-      console.log('user:', localStorage.user_name)
-
+      // console.log("事件监听器添加成功")
       // this.$nextTick(() => {
       //   setTimeout(() => {
       //     this.fetchData();
