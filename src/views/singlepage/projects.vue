@@ -140,10 +140,7 @@ export default {
   },
   created() {
     const vm = this;
-
-    // 添加事件监听器
-    console.log("事件监听器添加中")
-    window.addEventListener('message', function(event) {
+    const messageListener = function(event) {
       var receivedData = event.data;
       console.log('事件监听已触发')
       console.log('Received data:', receivedData.user_name, receivedData.token);
@@ -151,15 +148,19 @@ export default {
         localStorage.setItem("user_name", receivedData.user_name);
         localStorage.setItem("token", receivedData.token);
         vm.fetchData();
-        // window.removeEventListener('message', messageListener);
+        window.removeEventListener('message', messageListener);
       }
-    });
+    }
+    // 添加事件监听器
+    console.log("事件监听器添加中")
+    window.addEventListener('message', messageListener);
     console.log("事件监听器添加成功")
     console.log('user:', localStorage.user_name)
-    setTimeout(() => {
-      this.fetchData();
-    }, 400)
-
+    this.$nextTick(() => {
+      setTimeout(() => {
+        this.fetchData();
+      }, 400)
+    })
 
     // this.fetchData()
   },
