@@ -161,15 +161,11 @@ export default {
       this.$nextTick(() => {
         setTimeout(() => {
           this.fetchData();
-        }, 400)
+        }, 300)
       })
     }
 
-
-    this.fetchData();
-
-
-    // this.fetchData()
+    // this.fetchData();
   },
   methods: {
     currentChange(page){
