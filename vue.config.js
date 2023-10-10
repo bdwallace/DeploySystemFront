@@ -8,7 +8,7 @@ module.exports = defineConfig({
   devServer: {
     proxy: {
       '/v1/api': {
-        // target : 'http://192.168.10.10:5000'
+        // target : 'http://192.168.10.10:8000'
         target : 'http://127.0.0.1:5000'
         // target: 'http://52.79.252.25:6000'
       }

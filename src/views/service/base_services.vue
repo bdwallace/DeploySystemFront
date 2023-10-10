@@ -7,7 +7,7 @@
         </el-input>
         <el-button type="primary" icon="el-icon-plus" size="small" style="margin-left: 20px" @click="createService">创建服务</el-button>
         <el-button type="success" icon="el-icon-circle-check" size="small" style="margin-left: 20px" @click="helthCheckClick">服务检测</el-button>
-        <el-button type="danger" icon="el-icon-s-promotion" size="small" style="margin-left: 20px" @click="dialogAddVisable=true">服务发布</el-button>
+        <el-button type="danger" icon="el-icon-s-promotion" size="small" style="margin-left: 20px" @click="batchDeployClick">批量发布</el-button>
       </div>
 
 
@@ -18,7 +18,11 @@
 
           <el-table-column type="selection" width="40"></el-table-column>
           <el-table-column prop="svc_name" label="服务名称" width="150" align="center"></el-table-column>
-          <el-table-column prop="platform" label="平台所属" width="150" align="center"></el-table-column>
+          <el-table-column prop="platform" label="平台所属" width="150" align="center">
+            <template slot-scope="scope">
+              <el-tag  size="mini" style="margin-right: 3px">{{ scope.row.platform }}</el-tag>
+            </template>
+          </el-table-column>
           <el-table-column prop="project" label="项目环境" width="120" align="center"></el-table-column>
           <el-table-column prop="svc_port" label="端口" width="100px"  align="center"></el-table-column>
           <el-table-column prop="servers" label="主机" fit align="center">
@@ -27,32 +31,39 @@
                 <el-tag size="small" style="margin-right: 3px;width: 110px;margin-top: 3px" >{{ item.public_ip }}</el-tag>
                 <el-tag size="small" style="margin-right: 3px;width: 110px" type="info">{{ item.inner_ip }}</el-tag>
                 <el-tag size="small" style="margin-right: 3px;width: 83px" v-if="item.run_time==='未知' || item.run_time===''" type="warning" >未知</el-tag>
-                <el-tag size="small" style="margin-right: 3px;" v-else>{{ item.run_time }}</el-tag>
-                <el-tooltip effect="light" content="http://54.179.119.160:8134/login" placement="left" style="margin-right: 5px">
-                  <el-tag v-if="item.health==='200'" size="small" type="success" >健康</el-tag>
+                <el-tag size="small" style="margin-right: 3px;width: 83px" v-else-if="item.run_time.indexOf('exited')===0 || item.run_time.indexOf('restart')===0" type="danger" >{{ item.run_time }}</el-tag>
+                <el-tag size="small" style="margin-right: 3px;width: 83px" v-else>{{ item.run_time }}</el-tag>
+                <el-tooltip effect="light" :content="item.url" placement="left" style="margin-right: 5px">
+                  <el-tag v-if="item.health===200" size="small" type="success" >健康</el-tag>
                   <el-tag v-else-if="item.health==='未知'" size="small" type="warning">未知</el-tag>
                   <el-tag v-else type="danger" size="small">异常</el-tag>
                 </el-tooltip>
-                <el-button size="mini" type="primary" @click="restartClick(item)">重启</el-button>
-                <el-button size="mini" type="primary" @click="closeClick(item)" style="margin-left: 3px">关闭</el-button>
+                <el-button size="mini" type="primary" @click="restartClick(scope.row, item)">重启</el-button>
+                <el-button size="mini" type="primary" @click="closeClick(scope.row, item)" style="margin-left: 3px">关闭</el-button>
               </div>
             </template>
           </el-table-column>
           <el-table-column prop="run_tag" label="运行版本" width="240px" align="center">
-<!--            <template slot-scope="scope">-->
-<!--              {{scope.row.servers[0].run_tag}}-->
-<!--            </template>-->
+            <template slot-scope="scope">
+              <div v-for="item in scope.row.servers" v-if="item.run_tag">
+                {{ item.run_tag}}
+              </div>
+              <div v-else>
+                {{ scope.row.run_tag}}
+              </div>
+            </template>
           </el-table-column>
           <el-table-column prop="online" label="上下线" width="75px" align="center">
             <template scope="scope">
-              <div v-for="item in scope.row.servers">
+              <div v-for="item in scope.row.servers" v-if="item.online">
+<!--                {{item.online}}-->
                 <el-tooltip :content="item.online" placement="top">
-                  <el-switch v-model="item.online"
+                  <el-switch v-model="item.online" v-if="item.svc_type==='java' || item.online"
                     active-color="#13ce66"
                     inactive-color="#ff4949"
                     active-value="上线"
                     inactive-value="下线"
-                    @change="linechange(scope.row)">
+                    @change="linechange(scope.row, item)">
                   </el-switch>
                 </el-tooltip>
               </div>
@@ -89,7 +100,7 @@
 <script>
 
 import {
-  getUsers, deleteUsers, updateUser, editUsers, getService, deleteService
+  svcCheck, getService, deleteService, addProcess, dockerCheck, serviceOption, lineChange
 } from "@/api";
 
 export default {
@@ -149,6 +160,7 @@ export default {
         return 0
       }else {
         this.tableData = resp.data
+        console.log(this.tableData)
         this.params.total = resp.total
       }
 
@@ -171,16 +183,16 @@ export default {
         this.$message({type: 'info', message: '已取消删除'});
       })
     },
-    async switchStatus(row){
-      let params = {'id': row.id, "mfa_on": row.mfa_on}
-      this.editData['mfa_on'] = row.mfa_on
-      var response = await updateUser(params)
-      if (response.code === 200) {
-          this.$message({type: 'success', message: response.msg});
-        } else {
-          this.$message({type: 'error', message: response.msg});
-        }
-    },
+    // async switchStatus(row){
+    //   let params = {'id': row.id, "mfa_on": row.mfa_on}
+    //   this.editData['mfa_on'] = row.mfa_on
+    //   var response = await updateUser(params)
+    //   if (response.code === 200) {
+    //       this.$message({type: 'success', message: response.msg});
+    //     } else {
+    //       this.$message({type: 'error', message: response.msg});
+    //     }
+    // },
     editClick(row){
       this.editData = row
       this.$router.push('/services/cs/' + row.id)
@@ -189,33 +201,189 @@ export default {
       this.$router.push('/services/cs/0')
     },
     editUserCommit(){},
-    linechange(){
-      this.on_submit_loading = true
-      this.load_data = true
-      // let host_port = host + ":" + service.Port.split(",")[0].split(":")[0]
+    async linechange(row, item){
+      let data = {
+        project: row.project,
+        online: item.online,
+        host_port: item.inner_ip + ":" + row.svc_port.split(':')[0],
+      }
 
-      this.on_submit_loading = false
-      this.load_data = false
+      var response = await lineChange(data).catch(() =>{
+        this.$message({type: 'error', message: "请求错误"});
+        return
+      })
+      if (response.code === 200) {
+        this.$message({type: 'success', message: response.msg});
+      } else {
+        if (item.online === "上线"){
+
+          item.online="下线"
+        }
+        else if(item.online === "下线"){item.online='上线'}
+        this.$message({type: 'error', message: response.msg});
+      }
+    },
+    async svcCheckCommit(i, data){
+      var response = await svcCheck(data).catch(() => {
+        this.$message({type: "error", message: "请求失败"})
+        return 0
+      })
+      if (response.code === 401){
+        this.multipleSelection[i].host_status = "异常"
+      }else if (response.code !== 200){
+        this.$message({type: "error", message: response.msg})
+      } else {
+        // this.$message({type: "success", message: response.msg})
+        this.multipleSelection[i].services = response.data.svc
+      }
     },
     helthCheckClick(){
-      this.tableData.forEach((item) => {
-        console.log(item)
-        item.servers.forEach((server) => {
-          server.health = "200"
-          server.run_time = 'Up 7 weeks'
+      if (this.multipleSelection.length === 0) {
+        this.$message({type: "warning", message: "选择不能为空"})
+        return
+      }
+      console.log(this.multipleSelection)
+      let reqs = []
+      for (const i in this.multipleSelection){
+        let obj = this.multipleSelection[i]
+        // let data = {
+        //   id : obj.id,
+        //   inner_ip: obj.inner_ip,
+        //   docker_port: obj.docker_port,
+        //   svc: obj.services
+        // }
+        var response = svcCheck({id: obj.id}).catch(() => {
+          this.$message({type: "error", message: "请求失败"})
+          return 0
+        }).then(resp =>{
+          if (resp.code === 401){
+            this.multipleSelection[i].host_status = "异常"
+          }else if (resp.code !== 200){
+            this.$message({type: "error", message: resp.msg})
+          } else {
+            // this.$message({type: "success", message: response.msg})
+            this.multipleSelection[i].servers = resp.data
+            console.log(this.multipleSelection[i])
+          }
         })
 
+        // let req = new Promise((resolve, reject) =>{
+        //   svcCheck(data).then( res => {
+        //     resolve(res)
+        //   }).catch(err=>{
+        //     reject(err)
+        //   })
+        // })
+        // reqs.push(req)
+      }
+      // this.tableData.forEach((item) => {
+      //   item.servers.forEach((server) => {
+      //     server.health = "200"
+      //     server.run_time = 'Up 7 weeks'
+      //   })
+      // })
+      // this.$message({type: "success", message: "检测完成"})
+    },
+    async deployClick(row){
+      var response = await addProcess({"id": row.id}).catch(() => {
+        this.$message({type: "error", message: "请求失败"})
+        return 0
       })
+      if (response.code !== 200){
+        this.$message({type: "error", message: response.msg})
+        return
+      } else {
+        this.$message({type: "success", message: response.msg})
+      }
+      // console.log(response.data)
+      this.$router.push('/services/deploy/' + response.data.task_id)
     },
-    deployClick(row){
-      this.editData = row
-      this.$router.push('/services/deploy/' + row.service_name)
+    async batchDeployClick(){
+      const services_id = []
+      this.multipleSelection.forEach(item => {
+        services_id.push(item.id)
+      })
+      console.log(services_id)
+      var response = await addProcess({"id": services_id}).catch(() => {
+        this.$message({type: "error", message: "请求失败"})
+        return 0
+      })
+      if (response.code !== 200){
+        this.$message({type: "error", message: response.msg})
+        return
+      } else {
+        this.$message({type: "success", message: response.msg})
+      }
+      // console.log(response.data)
+      this.$router.push('/services/deploy/' + response.data.task_id)
     },
-    restartClick(item){
+    async restartClick(row, item){
+      let data = {
+        svc_name: row.svc_name,
+        docker_port: row.docker_port,
+        opt_type: 'restart',
+        host: item
+      }
+      console.log(data)
+      var response = await serviceOption(data).catch(() => {
+        this.$message({type: "error", message: "请求失败"})
+        return 0
+      })
+      if (response.code !== 200){
+        this.$message({type: "error", message: response.msg})
+        return
+      } else {
+        this.$message({type: "success", message: response.msg})
+      }
+
+      var response = await svcCheck({id: row.id}).catch(() => {
+          this.$message({type: "error", message: "请求失败"})
+          return 0
+        })
+        if (response.code === 401){
+          this.multipleSelection[i].host_status = "异常"
+        }else if (response.code !== 200){
+          this.$message({type: "error", message: response.msg})
+        } else {
+          // this.$message({type: "success", message: response.msg})
+          var index = this.tableData.indexOf(row)
+          this.tableData[index].servers = response.data
+        }
 
     },
-    closeClick(item){
+    async closeClick(row, item){
+      let data = {
+        svc_name: row.svc_name,
+        docker_port: row.docker_port,
+        opt_type: 'stop',
+        host: item
+      }
+      // console.log(data)
+      var response = await serviceOption(data).catch(() => {
+        this.$message({type: "error", message: "请求失败"})
+        return 0
+      })
+      if (response.code !== 200){
+        this.$message({type: "error", message: response.msg})
+        return
+      } else {
+        this.$message({type: "success", message: response.msg})
+      }
 
+
+      var response = await svcCheck({id: row.id}).catch(() => {
+          this.$message({type: "error", message: "请求失败"})
+          return 0
+        })
+        if (response.code === 401){
+          this.multipleSelection[i].host_status = "异常"
+        }else if (response.code !== 200){
+          this.$message({type: "error", message: response.msg})
+        } else {
+          // this.$message({type: "success", message: response.msg})
+          var index = this.tableData.indexOf(row)
+          this.tableData[index].servers = response.data
+        }
     }
 
 

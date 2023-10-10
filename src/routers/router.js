@@ -20,14 +20,15 @@ export const constantRoutes = [
     component: Layout,
     meta: {
       title: "项目管理",
-      icon: "iconfont icon-project"
+      icon: "iconfont icon-project",
+      keepAlive: false
     },
     children: [{
       path: "",
       name: "项目管理",
       hidden: false,
       component: () => import('@/views/singlepage/projects.vue'),
-      meta: { title: "项目管理",icon: "iconfont icon-project" }
+      meta: { title: "项目管理",icon: "iconfont icon-project",keepAlive: false }
     }]
   },
   {
@@ -97,6 +98,13 @@ export const constantRoutes = [
         name: '发布服务',
         hidden: true,
         meta: { title: '发布服务', icon: 'iconfont icon-yonghuguanli' }
+      },
+        {
+        path: 'upload/:id',
+        component: () => import('@/views/service/upload_svc.vue'),
+        name: '服务上传与编译',
+        hidden: true,
+        meta: { title: '服务上传与编译', icon: 'iconfont icon-yonghuguanli' }
       },
     ]
   },

@@ -56,18 +56,7 @@ export default {
   data() {
     return {
       params: {page: 1, pagesize: 15, total: 0, search: ""},
-      tableData: [
-        {platform_code: 110, platform_name: "Pre-桑巴舞-3302", create_time: "2023-9-14 10:45:12", update_time: "2023-9-14 10:45:12", services: [
-            {svc_name: 'pre-Brl-H5'},{svc_name: 'merchant_brl'},{svc_name: 'pre-Brl-H5'},{svc_name: 'pre-Brl-PC'}]
-        },
-        {platform_code: 3300, platform_name: "预生产3300-U8", create_time: "2023-9-14 10:45:12", update_time: "2023-9-14 10:45:12", services: [
-          {svc_name: 'H5_U8'},{svc_name: 'merchant_u8'},{svc_name: 'share_agent_6hao'},{svc_name: 'customer_6hao'},{svc_name: 'H5_6hao_proxy'},
-            {svc_name: 'HK-azkaijiang-akbet'},{svc_name: 'down-share-6hao'},{svc_name: 'H5_6hao'}]
-        },
-        {platform_code: 3302, platform_name: "Pre-桑巴舞-3302", create_time: "2023-9-14 10:45:12", update_time: "2023-9-14 10:45:12", services: [
-          {svc_name: 'superbackend'},{svc_name: 'merchant'},{svc_name: 'operation'},{svc_name: 'nginx'}]
-        }
-      ]
+      tableData: []
     }
   },
   created() {

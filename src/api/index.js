@@ -221,72 +221,143 @@ export function getServiceTemplate(params){
   })
 }
 
-export function addMenusGroup(data){
+export function downloadCert(params){
   return axios({
-    url: '/menu_group',
-    method: 'post',
-    data
+    url: '/download',
+    method: 'get',
+    responseType: "blob",
+    params
   })
 }
 
 
 
 
-export function getApis(params){
+export function getProcess(params){
   return axios({
-    url: '/apis',
+    url: '/process',
     method: 'get',
     params: params
   })
 }
 
 
-export function addApis(data){
+export function addProcess(data){
   return axios({
-    url: '/apis',
+    url: '/process',
     method: 'post',
     data
   })
 }
 
-export function editApis(params){
+export function deleteProcess(params){
   return axios({
-    url: '/apis',
-    method: 'put',
-    params
-  })
-}
-
-export function deleteApis(params){
-  return axios({
-    url: '/apis',
+    url: '/process',
     method: 'delete',
     params
   })
 }
 
-
-export function getApiGroup(params){
+export function getTagList(params){
   return axios({
-    url: '/api_group',
+    url: '/taglist',
+    method: 'get',
+    params
+  })
+}
+
+
+
+export function svcCheck(params){
+  return axios({
+    url: '/svc_check',
     method: 'get',
     params: params
   })
 }
 
-export function addApiGroup(data){
+export function dockerCheck(data){
   return axios({
-    url: '/api_group',
+    url: '/docker_check',
     method: 'post',
     data
   })
 }
 
-export function getLogs(params){
+export function commitTag(data){
   return axios({
-    url: '/logs',
-    method: 'get',
-    params: params
+    url: '/deploy',
+    method: 'patch',
+    data
   })
 }
 
+export function getLog(params){
+  return axios({
+    url: '/deploy',
+    method: 'get',
+    params
+  })
+}
+
+
+export function commitDeployTask(data){
+  return axios({
+    url: '/deploy',
+    method: 'post',
+    data
+  })
+}
+
+
+export function serviceOption(data){
+  return axios({
+    url: '/option',
+    method: 'post',
+    data
+  })
+}
+
+
+export function lineChange(data){
+  return axios({
+    url: '/option',
+    method: 'patch',
+    data
+  })
+}
+
+
+export function uploadCode(data){
+  return axios({
+    url: '/upload_build',
+    method: 'post',
+    data
+  })
+}
+
+export function buildCode(data){
+  return axios({
+    url: '/upload_build',
+    method: 'patch',
+    data
+  })
+}
+
+export function buildLog(params){
+  return axios({
+    url: '/upload_build',
+    method: 'get',
+    params
+  })
+}
+
+
+export function codeDownload(params){
+  return axios({
+    url: '/codedownload',
+    method: 'get',
+    responseType: "blob",
+    params
+  })
+}

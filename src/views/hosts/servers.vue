@@ -25,8 +25,10 @@
             <template slot-scope="scope" >
               <div v-for="item in scope.row.services">
                 <el-tag size="small" style="margin-right: 3px;margin-top: 3px;width: 200px" >{{ item.docker_name }}</el-tag>
-                <el-tag size="small" style="margin-right: 3px;width: 100px" v-if="item.run_time==='未知'" type="warning" >{{ item.run_time }}</el-tag>
-                <el-tag size="small" style="margin-right: 3px;width: 100px" v-else>{{ item.run_time }}</el-tag>
+                <el-tag size="small" style="margin-right: 3px;margin-top: 3px;width: 100px"
+                        v-if="item.run_time==='未知' || item.run_time===''" type="warning" >{{ item.run_time }}</el-tag>
+                <el-tag size="small" style="margin-right: 3px;width: 100px" v-else-if="item.run_time.indexOf('Up')===0" >{{ item.run_time }}</el-tag>
+                <el-tag size="small" style="margin-right: 3px;margin-top: 3px;width: 100px" v-else type="danger">{{ item.run_time }}</el-tag>
                 <el-tooltip effect="light" content="http://54.179.119.160:8134/login" placement="left">
                   <el-tag v-if="item.health==='200'" size="small" type="success" >运行中</el-tag>
                   <el-tag v-else-if="item.health==='未知'" size="small" type="warning" style="width: 52px">未知</el-tag>
@@ -38,7 +40,9 @@
           </el-table-column>
           <el-table-column prop="host_status" label="主机状态" width="100" align="center">
             <template slot-scope="scope">
-              <el-tag type="success" size="small" style="margin-right: 3px;margin-top: 3px" >{{ scope.row.host_status }}</el-tag>
+              <el-tag v-if="scope.row.host_status==='正常'" size="small" type="success" >正常</el-tag>
+              <el-tag v-else-if="scope.row.host_status==='未知' " size="small" type="warning" style="width: 52px">未知</el-tag>
+              <el-tag v-else type="danger" size="small" style="width: 52px">异常</el-tag>
             </template>
           </el-table-column>
           <el-table-column prop="create_time" label="更新时间" width="160" align="center"></el-table-column>
@@ -126,7 +130,7 @@
 
 import {
   addHost,
-  deleteHost, editHost, getHosts, getProject
+  deleteHost, dockerCheck, editHost, getHosts, getProject
 } from "@/api";
 
 export default {
@@ -145,25 +149,25 @@ export default {
       multipleSelection: [],
       projects: [],
       tableData: [
-        {host_name: "pre-base-services-a", public_ip: "13.250.57.29",inner_ip: "172.166.10.50",services: [{docker_name: "zuul",health: "未知", run_time: "未知"},
-            {docker_name: "common-api",health: "400", run_time: "Up 37 hours"},
-            {docker_name: "eureka",health: "未知", run_time: "未知"}], envir: "预生产", create_time: "2023-9-12 12:00:00"},
-        {host_name: "pre-base-services-b", public_ip: "13.229.239.172",inner_ip: "172.166.1.62",
-          services: [{docker_name: "common-api",health: "200", run_time: "Up 37 hours"},{docker_name: "eureka",health: "200", run_time: "Up 37 hours"}], envir: "预生产", create_time: "2023-9-12 12:00:00"},
-        {host_name: "pre-micro-services-a", public_ip: "54.169.77.132",inner_ip: "172.166.2.244",
-          services: [], envir: "预生产", create_time: "2023-9-12 12:00:00"},
-        {host_name: "pre-config-services-01-a", public_ip: "13.212.96.7",inner_ip: "172.166.9.34",
-          services: [{docker_name: "config_issue_api",health: "200", run_time: "Up 37 hours"},
-            {docker_name: "config_open_api",health: "200", run_time: "Up 37 hours"},
-            {docker_name: "config_api",health: "200", run_time: "Up 37 hours"}], envir: "预生产", create_time: "2023-9-12 12:00:00"},
-        {host_name: "pre-config-services-02-a", public_ip: "54.179.87.237",inner_ip: "172.166.13.180",
-          services: [{docker_name: "config_mq_consumer",health: "200", run_time: "Up 37 hours"},{docker_name: "config_timer",health: "200", run_time: "Up 37 hours"},
-            {docker_name: "config_admin_api",health: "200", run_time: "Up 37 hours"}], envir: "预生产", create_time: "2023-9-12 12:00:00"},
-        {host_name: "pre-lottery-services-01-a", public_ip: "54.254.168.236",inner_ip: "172.166.11.97",
-          services: [{docker_name: "zuul_u8-pre",health: "200", run_time: "Up 37 hours"},
-            {docker_name: "cadvisor",health: "200", run_time: "Up 37 hours"},
-            {docker_name: "mysql",health: "400", run_time: "Up 37 hours"},
-            {docker_name: "nacos-standalone-mysql",health: "200", run_time: "Up 37 hours"}], envir: "预生产", create_time: "2023-9-12 12:00:00"},
+        // {host_name: "pre-base-services-a", public_ip: "13.250.57.29",inner_ip: "172.166.10.50",services: [{docker_name: "zuul",health: "未知", run_time: "未知"},
+        //     {docker_name: "common-api",health: "400", run_time: "Up 37 hours"},
+        //     {docker_name: "eureka",health: "未知", run_time: "未知"}], envir: "预生产", create_time: "2023-9-12 12:00:00"},
+        // {host_name: "pre-base-services-b", public_ip: "13.229.239.172",inner_ip: "172.166.1.62",
+        //   services: [{docker_name: "common-api",health: "200", run_time: "Up 37 hours"},{docker_name: "eureka",health: "200", run_time: "Up 37 hours"}], envir: "预生产", create_time: "2023-9-12 12:00:00"},
+        // {host_name: "pre-micro-services-a", public_ip: "54.169.77.132",inner_ip: "172.166.2.244",
+        //   services: [], envir: "预生产", create_time: "2023-9-12 12:00:00"},
+        // {host_name: "pre-config-services-01-a", public_ip: "13.212.96.7",inner_ip: "172.166.9.34",
+        //   services: [{docker_name: "config_issue_api",health: "200", run_time: "Up 37 hours"},
+        //     {docker_name: "config_open_api",health: "200", run_time: "Up 37 hours"},
+        //     {docker_name: "config_api",health: "200", run_time: "Up 37 hours"}], envir: "预生产", create_time: "2023-9-12 12:00:00"},
+        // {host_name: "pre-config-services-02-a", public_ip: "54.179.87.237",inner_ip: "172.166.13.180",
+        //   services: [{docker_name: "config_mq_consumer",health: "200", run_time: "Up 37 hours"},{docker_name: "config_timer",health: "200", run_time: "Up 37 hours"},
+        //     {docker_name: "config_admin_api",health: "200", run_time: "Up 37 hours"}], envir: "预生产", create_time: "2023-9-12 12:00:00"},
+        // {host_name: "pre-lottery-services-01-a", public_ip: "54.254.168.236",inner_ip: "172.166.11.97",
+        //   services: [{docker_name: "zuul_u8-pre",health: "200", run_time: "Up 37 hours"},
+        //     {docker_name: "cadvisor",health: "200", run_time: "Up 37 hours"},
+        //     {docker_name: "mysql",health: "400", run_time: "Up 37 hours"},
+        //     {docker_name: "nacos-standalone-mysql",health: "200", run_time: "Up 37 hours"}], envir: "预生产", create_time: "2023-9-12 12:00:00"},
       ]
     }
   },
@@ -232,7 +236,7 @@ export default {
       this.dialogEditVisable = true
     },
     async addHostCommit(){
-      console.log(this.addHost)
+      // console.log(this.addHost)
       var response = await addHost(this.addHost).catch(() => {
         this.$message({type: "error", message: "请求失败"})
         return 0
@@ -248,7 +252,7 @@ export default {
     async editHostCommit(){
       delete this.editHost.create_time
       delete this.editHost.update_time
-      console.log(this.editHost)
+      // console.log(this.editHost)
       var response = await editHost(this.editHost).catch(() => {
         this.$message({type: "error", message: "请求失败"})
         return 0
@@ -261,17 +265,62 @@ export default {
       this.dialogEditVisable = false
       await this.fetchData()
     },
-    createServer(){
-
-    },
-    dockerCheckClick(){
-      this.tableData.forEach((item) => {
-        console.log(item)
-        item.services.forEach((server) => {
-          server.health = "200"
-          server.run_time = 'Up 7 weeks'
+    // async dockerCheckCommit(i, data){
+    //   var response = await dockerCheck(data).catch(() => {
+    //     this.$message({type: "error", message: "请求失败"})
+    //     return 0
+    //   })
+    //   if (response.code === 401){
+    //     this.multipleSelection[i].host_status = "异常"
+    //   }else if (response.code !== 200){
+    //     this.$message({type: "error", message: response.msg})
+    //   } else {
+    //     // this.$message({type: "success", message: response.msg})
+    //     this.multipleSelection[i].services = response.data.svc
+    //   }
+    // },
+    async dockerCheckClick(){
+      if (this.multipleSelection.length === 0) {
+        this.$message({type: "warning", message: "选择不能为空"})
+        return
+      }
+      let reqs = []
+      for (const i in this.multipleSelection){
+        let obj = this.multipleSelection[i]
+        console.log(obj)
+        let data = {
+          id : obj.id,
+          public_ip: obj.public_ip,
+          inner_ip: obj.inner_ip,
+          // docker_port: obj.docker_port,
+          svc: obj.services
+        }
+        // await this.dockerCheckCommit(i, data)
+        let req = new Promise((resolve, reject) =>{
+          dockerCheck(data).then( res => {
+            resolve(res)
+          }).catch(err=>{
+            reject(err)
+          })
         })
+        reqs.push(req)
+      }
+      this.$message({type: "success", message: "检测中,请稍后"})
+      Promise.all(reqs).then( res => {
+        // console.log(res)
+        for (const i in res){
+          if (res[i].code === 401){
+            this.multipleSelection[i].host_status = "异常"
+          }else if (res[i].code !== 200){
+            this.$message({type: "error", message: res[i].msg})
+          } else {
+            // this.$message({type: "success", message: response.msg})
+            this.multipleSelection[i].services = res[i].data.svc
+          }
+        }
+        // this.$message({type: "success", message: "检测已完成"})
       })
+
     }
   }
 }

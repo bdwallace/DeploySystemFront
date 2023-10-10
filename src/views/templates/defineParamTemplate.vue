@@ -22,7 +22,7 @@
               <el-tag size="mini" v-for="item in scope.row.config" style="margin-right: 3px">{{ item.value }}</el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="services" label="服务关联" fit align="center">
+          <el-table-column prop="services" label="服务关联(包含服务模板)" fit align="center">
             <template slot-scope="scope">
               <el-tag size="small" style="margin-right: 3px;margin-top: 5px;" v-for="item in scope.row.services">{{ item.svc_name }}</el-tag>
             </template>
@@ -124,14 +124,14 @@ export default {
         name: ""
       },
       tableData: [
-        {name: "zuul参数模板", config:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
-        {name: "eureka参数模板", config:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
-        {name: "config_remoteservice_provider参数模板", config:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
-        {name: "lottery_api参数模板", config:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
-        {name: "config_timer参数模板", config:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
-        {name: "lottery_risk参数模板", config:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
-        {name: "HK-azkaijiang-akbet参数模板", config:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
-        {name: "kaijiang_6hao参数模板", config:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
+        // {name: "zuul参数模板", config:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
+        // {name: "eureka参数模板", config:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
+        // {name: "config_remoteservice_provider参数模板", config:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
+        // {name: "lottery_api参数模板", config:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
+        // {name: "config_timer参数模板", config:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
+        // {name: "lottery_risk参数模板", config:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
+        // {name: "HK-azkaijiang-akbet参数模板", config:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
+        // {name: "kaijiang_6hao参数模板", config:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
 
       ]
     }
