@@ -157,18 +157,15 @@ export default {
     };
 
     // 添加事件监听器
-    window.onload = () => {
-      console.log("事件监听器添加中")
-      window.addEventListener('message', messageListener);
-      console.log("事件监听器添加成功")
-    }
+    console.log("事件监听器添加中")
+    window.addEventListener('message', messageListener);
+    console.log("事件监听器添加成功")
 
     console.log('user:', localStorage.user_name)
-    this.$nextTick(() => {
-      setTimeout(() => {
-        this.fetchData();
-      }, 500)
-    })
+    setTimeout(() => {
+      this.fetchData();
+    }, 400)
+
 
     // this.fetchData()
   },
