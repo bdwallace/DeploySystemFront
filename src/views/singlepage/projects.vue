@@ -138,25 +138,22 @@ export default {
       ]
     }
   },
-  mounted() {
-
-  },
   created() {
     const vm = this;
 
     // 添加事件监听器
     console.log("事件监听器添加中")
-    // window.addEventListener('message', function(event) {
-    //   var receivedData = event.data;
-    //   console.log('事件监听已触发')
-    //   console.log('Received data:', receivedData.user_name, receivedData.token);
-    //   if (receivedData.user_name) {
-    //     localStorage.setItem("user_name", receivedData.user_name);
-    //     localStorage.setItem("token", receivedData.token);
-    //     vm.fetchData();
-    //     // window.removeEventListener('message', messageListener);
-    //   }
-    // });
+    window.addEventListener('message', function(event) {
+      var receivedData = event.data;
+      console.log('事件监听已触发')
+      console.log('Received data:', receivedData.user_name, receivedData.token);
+      if (receivedData.user_name) {
+        localStorage.setItem("user_name", receivedData.user_name);
+        localStorage.setItem("token", receivedData.token);
+        vm.fetchData();
+        // window.removeEventListener('message', messageListener);
+      }
+    });
     console.log("事件监听器添加成功")
     console.log('user:', localStorage.user_name)
     setTimeout(() => {
