@@ -143,8 +143,10 @@ export default {
   },
   created() {
     const vm = this;
-    // 存储事件监听器的回调函数
-    const messageListener = function(event) {
+
+    // 添加事件监听器
+    console.log("事件监听器添加中")
+    window.addEventListener('message', function(event) {
       var receivedData = event.data;
       console.log('事件监听已触发')
       console.log('Received data:', receivedData.user_name, receivedData.token);
@@ -152,15 +154,10 @@ export default {
         localStorage.setItem("user_name", receivedData.user_name);
         localStorage.setItem("token", receivedData.token);
         vm.fetchData();
-        window.removeEventListener('message', messageListener);
+        // window.removeEventListener('message', messageListener);
       }
-    };
-
-    // 添加事件监听器
-    console.log("事件监听器添加中")
-    window.addEventListener('message', messageListener);
+    });
     console.log("事件监听器添加成功")
-
     console.log('user:', localStorage.user_name)
     setTimeout(() => {
       this.fetchData();
@@ -182,12 +179,9 @@ export default {
       // console.log(val)
       this.multipleSelection = val
     },
-    async fetchData(){
-      var resp = await getProject(this.params).catch(() => {
-        this.$message({type: 'error', message: "请求错误"})
-        return 0
-      })
-      if (resp.code !== 200){
+    fetchData(){
+      var resp = getProject(this.params).then(resp => {
+        if (resp.code !== 200){
         this.$message({type: 'warning', message: resp.msg})
         return 0
       }else {
@@ -195,6 +189,10 @@ export default {
         this.params.total = resp.total
         this.$message({type: 'success', message: resp.msg})
       }
+      }).catch(() => {
+        this.$message({type: 'error', message: "请求错误"})
+        return 0
+      })
 
 
     },
