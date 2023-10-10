@@ -153,17 +153,21 @@ export default {
     }
     // 添加事件监听器
     if (!localStorage.user_name){
-      console.log("事件监听器添加")
+      console.log("事件监听器添加中")
+      window.addEventListener('message', messageListener);
+      console.log("事件监听器添加成功")
+      console.log('user:', localStorage.user_name)
+
+      this.$nextTick(() => {
+        setTimeout(() => {
+          this.fetchData();
+        }, 400)
+      })
     }
-    console.log("事件监听器添加中")
-    window.addEventListener('message', messageListener);
-    console.log("事件监听器添加成功")
-    console.log('user:', localStorage.user_name)
-    this.$nextTick(() => {
-      setTimeout(() => {
-        this.fetchData();
-      }, 400)
-    })
+
+
+    this.fetchData();
+
 
     // this.fetchData()
   },
