@@ -162,7 +162,10 @@ export default {
       //   }, 300)
       // })
     }else {
-      this.fetchData();
+      let code = this.fetchData();
+      if (code === 401){
+        window.addEventListener('message', messageListener);
+      }
     }
 
     // this.fetchData();
@@ -194,6 +197,10 @@ export default {
         this.$message({type: 'error', message: "请求错误"})
         return 0
       })
+
+      if( resp.code === 401){
+        return 401
+      }
 
 
     },
