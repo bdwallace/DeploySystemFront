@@ -153,7 +153,7 @@ export default {
       }
     }
     // 添加事件监听器
-    if (!localStorage.user_name || localStorage.status !== 200){
+    if (!localStorage.user_name || localStorage.status !== '200'){
       console.log("事件监听器添加中")
       window.addEventListener('message', messageListener);
       console.log("事件监听器添加成功")
