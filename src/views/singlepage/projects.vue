@@ -145,6 +145,7 @@ export default {
       // console.log('事件监听已触发')
       // console.log('Received data:', receivedData.user_name, receivedData.token);
       if (receivedData.user_name) {
+        console.log("username:", receivedData.user_name)
         localStorage.setItem("user_name", receivedData.user_name);
         localStorage.setItem("token", receivedData.token);
         vm.fetchData();
@@ -163,8 +164,11 @@ export default {
       // })
     }else {
       let code = this.fetchData();
+      console.log(typeof code, code)
       if (code === 401){
+
         window.addEventListener('message', messageListener);
+        console.log("监听器已添加", localStorage.user_name)
       }
     }
 
