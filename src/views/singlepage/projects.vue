@@ -153,23 +153,17 @@ export default {
       }
     }
     // 添加事件监听器
-    if (!localStorage.user_name){
-      // console.log("事件监听器添加中")
+    if (!localStorage.user_name || localStorage.status !== 200){
+      console.log("事件监听器添加中")
       window.addEventListener('message', messageListener);
-      // console.log("事件监听器添加成功")
+      console.log("事件监听器添加成功")
       // this.$nextTick(() => {
       //   setTimeout(() => {
       //     this.fetchData();
       //   }, 300)
       // })
     }else {
-      let code = this.fetchData();
-      console.log(typeof code, code)
-      if (code === 401){
-
-        window.addEventListener('message', messageListener);
-        console.log("监听器已添加", localStorage.user_name)
-      }
+      this.fetchData();
     }
 
     // this.fetchData();
@@ -189,22 +183,20 @@ export default {
     },
     fetchData(){
       var resp = getProject(this.params).then(resp => {
+        localStorage.setItem("status", resp.code);
         if (resp.code !== 200){
-        this.$message({type: 'warning', message: resp.msg})
-        return 0
-      }else {
-        this.tableData = resp.data
-        this.params.total = resp.total
-        this.$message({type: 'success', message: resp.msg})
-      }
+          this.$message({type: 'warning', message: resp.msg})
+          return 0
+        }else {
+          this.tableData = resp.data
+          this.params.total = resp.total
+          this.$message({type: 'success', message: resp.msg})
+        }
       }).catch(() => {
         this.$message({type: 'error', message: "请求错误"})
         return 0
       })
 
-      if( resp.code === 401){
-        return 401
-      }
 
 
     },
