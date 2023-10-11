@@ -145,6 +145,7 @@ export default {
       // console.log('事件监听已触发')
       // console.log('Received data:', receivedData.user_name, receivedData.token);
       if (receivedData.user_name) {
+        console.log("username:", receivedData.user_name)
         localStorage.setItem("user_name", receivedData.user_name);
         localStorage.setItem("token", receivedData.token);
         vm.fetchData();
@@ -152,10 +153,10 @@ export default {
       }
     }
     // 添加事件监听器
-    if (!localStorage.user_name){
-      // console.log("事件监听器添加中")
+    if (!localStorage.user_name || localStorage.status !== '200'){
+      console.log("事件监听器添加中")
       window.addEventListener('message', messageListener);
-      // console.log("事件监听器添加成功")
+      console.log("事件监听器添加成功")
       // this.$nextTick(() => {
       //   setTimeout(() => {
       //     this.fetchData();
@@ -165,6 +166,7 @@ export default {
       this.fetchData();
     }
 
+    // this.fetchData();
   },
   methods: {
     currentChange(page){
@@ -181,18 +183,20 @@ export default {
     },
     fetchData(){
       var resp = getProject(this.params).then(resp => {
+        localStorage.setItem("status", resp.code);
         if (resp.code !== 200){
-        this.$message({type: 'warning', message: resp.msg})
-        return 0
-      }else {
-        this.tableData = resp.data
-        this.params.total = resp.total
-        this.$message({type: 'success', message: resp.msg})
-      }
+          this.$message({type: 'warning', message: resp.msg})
+          return 0
+        }else {
+          this.tableData = resp.data
+          this.params.total = resp.total
+          this.$message({type: 'success', message: resp.msg})
+        }
       }).catch(() => {
         this.$message({type: 'error', message: "请求错误"})
         return 0
       })
+
 
 
     },
