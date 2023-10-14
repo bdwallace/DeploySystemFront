@@ -102,11 +102,11 @@
           <el-form-item prop="public_ip" label="外网IP" required>
             <el-input v-model="editHost.public_ip" placeholder="请输入外网IP" ></el-input>
           </el-form-item>
-          <el-form-item prop="docker_port" label="Docker Port">
-            <el-select v-model="editHost.docker_port" placeholder="请选择容器端口" style="width: 70%">
-              <el-option v-for="item in itemDockerPort" :label="item" :value="item"></el-option>
-            </el-select>
-          </el-form-item>
+<!--          <el-form-item prop="docker_port" label="Docker Port">-->
+<!--            <el-select v-model="editHost.docker_port" placeholder="请选择容器端口" style="width: 70%">-->
+<!--              <el-option v-for="item in itemDockerPort" :label="item" :value="item"></el-option>-->
+<!--            </el-select>-->
+<!--          </el-form-item>-->
         </el-form>
         <div slot="footer" class="dialog-footer" style="text-align: center">
           <el-button @click="dialogEditVisable = false">取 消</el-button>
