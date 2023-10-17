@@ -231,15 +231,15 @@ export default {
       }
     },
     helthCheckClick(){
-      if (this.multipleSelection.length === 0) {
-        this.$message({type: "warning", message: "选择不能为空"})
-        return
-      }
+      // if (this.multipleSelection.length === 0) {
+      //   this.$message({type: "warning", message: "选择不能为空"})
+      //   return
+      // }
       // console.log(this.multipleSelection)
       let reqs = []
       this.$message({type: "success", message: "检测中,请稍后"})
-      for (const i in this.multipleSelection){
-        let obj = this.multipleSelection[i]
+      for (const i in this.tableData){
+        let obj = this.tableData[i]
         // let data = {
         //   id : obj.id,
         //   inner_ip: obj.inner_ip,
@@ -251,12 +251,12 @@ export default {
           return 0
         }).then(response => {
           if (response.code === 401){
-            this.multipleSelection[i].host_status = "异常"
+            this.tableData[i].host_status = "异常"
           }else if (response.code !== 200){
             this.$message({type: "error", message: response.msg})
           } else {
             // this.$message({type: "success", message: response.msg})
-            this.multipleSelection[i].servers = response.data
+            this.tableData[i].servers = response.data
           }
         })
 
@@ -274,12 +274,12 @@ export default {
       //   // console.log(res)
       //   for (const i in res){
       //     if (res[i].code === 401){
-      //       this.multipleSelection[i].host_status = "异常"
+      //       this.tableData[i].host_status = "异常"
       //     }else if (res[i].code !== 200){
       //       this.$message({type: "error", message: res[i].msg})
       //     } else {
       //       // this.$message({type: "success", message: response.msg})
-      //       this.multipleSelection[i].servers = res[i].data
+      //       this.tableData[i].servers = res[i].data
       //     }
       //   }
       //   this.$message({type: "success", message: "检测已完成"})
