@@ -244,53 +244,54 @@ export default {
       }
       console.log(this.multipleSelection)
       let reqs = []
+      this.$message({type: "success", message: "检测中,请稍后"})
       for (const i in this.multipleSelection){
         let obj = this.multipleSelection[i]
-        let data = {
-          id : obj.id,
-          inner_ip: obj.inner_ip,
-          docker_port: obj.docker_port,
-          svc: obj.services
-        }
-        // var response = svcCheck({id: obj.id}).catch(() => {
-        //   this.$message({type: "error", message: "请求失败"})
-        //   return 0
-        // }).then(resp =>{
-        //   if (resp.code === 401){
-        //     this.multipleSelection[i].host_status = "异常"
-        //   }else if (resp.code !== 200){
-        //     this.$message({type: "error", message: resp.msg})
-        //   } else {
-        //     // this.$message({type: "success", message: response.msg})
-        //     this.multipleSelection[i].servers = resp.data
-        //     console.log(this.multipleSelection[i])
-        //   }
-        // })
-
-        let req = new Promise((resolve, reject) =>{
-          svcCheck(data).then( res => {
-            resolve(res)
-          }).catch(err=>{
-            reject(err)
-          })
-        })
-        reqs.push(req)
-      }
-      this.$message({type: "success", message: "检测中,请稍后"})
-      Promise.all(reqs).then( res => {
-        // console.log(res)
-        for (const i in res){
-          if (res[i].code === 401){
+        // let data = {
+        //   id : obj.id,
+        //   inner_ip: obj.inner_ip,
+        //   docker_port: obj.docker_port,
+        //   svc: obj.services
+        // }
+        var response = svcCheck({id: obj.id}).catch(() => {
+          this.$message({type: "error", message: "请求失败"})
+          return 0
+        }).then(resp =>{
+          if (resp.code === 401){
             this.multipleSelection[i].host_status = "异常"
-          }else if (res[i].code !== 200){
-            this.$message({type: "error", message: res[i].msg})
+          }else if (resp.code !== 200){
+            this.$message({type: "error", message: resp.msg})
           } else {
             // this.$message({type: "success", message: response.msg})
-            this.multipleSelection[i].servers = res[i].data
+            this.multipleSelection[i].servers = resp.data
+            console.log(this.multipleSelection[i])
           }
-        }
-        this.$message({type: "success", message: "检测已完成"})
-      })
+        })
+
+        // let req = new Promise((resolve, reject) =>{
+        //   svcCheck(data).then( res => {
+        //     resolve(res)
+        //   }).catch(err=>{
+        //     reject(err)
+        //   })
+        // })
+        // reqs.push(req)
+      }
+      // this.$message({type: "success", message: "检测中,请稍后"})
+      // Promise.all(reqs).then( res => {
+      //   // console.log(res)
+      //   for (const i in res){
+      //     if (res[i].code === 401){
+      //       this.multipleSelection[i].host_status = "异常"
+      //     }else if (res[i].code !== 200){
+      //       this.$message({type: "error", message: res[i].msg})
+      //     } else {
+      //       // this.$message({type: "success", message: response.msg})
+      //       this.multipleSelection[i].servers = res[i].data
+      //     }
+      //   }
+      //   this.$message({type: "success", message: "检测已完成"})
+      // })
     },
     async deployClick(row){
       var response = await addProcess({"id": row.id}).catch(() => {
