@@ -201,7 +201,7 @@ export default {
         this.params.total = response.total
       }
 
-      var response = await getProject(this.params).catch(() => {
+      var response = await getProject({page: 1, pagesize: 100}).catch(() => {
         this.$message({type: 'error', message: "请求错误"})
         return 0
       })
