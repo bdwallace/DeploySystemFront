@@ -27,7 +27,7 @@
               </el-tag>
               <el-input v-if="tag_post" v-model="scope.row.new_tag" size="mini" disabled readonly style="width: 280px"></el-input>
               <el-select v-else v-model="scope.row.new_tag" filterable size="mini" style="width: 280px;margin-right: 3px"  @change="checkRelease(scope.row.new_tag)">
-                <el-option v-for="item in scope.row.release" style="font-size: 5px;"
+                <el-option v-for="item in scope.row.release"
                            :key="item" :label="item" :value="item">
                 </el-option>
               </el-select>
