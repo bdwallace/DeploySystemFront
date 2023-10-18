@@ -63,7 +63,7 @@
                 <el-tag size="small" style="margin-right: 3px;width: 83px" v-else-if="item.run_time.indexOf('exited')===0" type="danger" >{{ item.run_time }}</el-tag>
                 <el-tag size="small" style="margin-right: 3px;" v-else>{{ item.run_time }}</el-tag>
                 <el-input readonly class="input_blue" style="width: 200px" size="mini" v-model="item.run_tag" ></el-input>
-                <el-tooltip effect="light" content="http://54.179.119.160:8134/login" placement="left" style="margin-right: 3px">
+                <el-tooltip effect="light" :content="item.url" placement="left" style="margin-right: 3px">
                   <el-tag v-if="item.health==='200'" size="small" type="success" >健康</el-tag>
                   <el-tag v-else-if="item.health==='未知'" size="small" type="warning">未知</el-tag>
                   <el-tag v-else type="danger" size="small">异常</el-tag>
