@@ -246,8 +246,9 @@ export default {
         return false
       }
     },
-    async on_submit_form(){
-      var resp = await commitDeployTask({"services": this.tableData, "task_name": this.task_name})
+    async on_submit_form(gray_deploy){
+      // console.log(this.tableData)
+      var resp = await commitDeployTask({"services": this.tableData, "task_name": this.task_name, "gray_deploy": gray_deploy})
       if (resp.code !== 200){
         this.$message({type: 'warning', message: resp.msg})
       }else {
