@@ -87,7 +87,7 @@
 
       <div style="padding: 10px 16px;text-align: right;">
         <el-pagination background  layout="total, sizes, prev, pager, next, jumper"
-                     :page-size="params.pagesize" :page-sizes="[10,30,50,100]"
+                     :page-size="params.pagesize" :page-sizes="[15,30,50,100]"
                      :total="params.total"
                      @current-change="currentChange"
                      @size-change="handleSizeChange">
