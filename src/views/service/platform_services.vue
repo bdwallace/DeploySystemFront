@@ -24,7 +24,7 @@
             </template>
           </el-table-column>
           <el-table-column prop="project" label="项目环境" width="120" align="center"></el-table-column>
-          <el-table-column prop="svc_port" label="端口" width="100px"  align="center"></el-table-column>
+          <el-table-column prop="svc_port" label="端口" width="120"  align="center"></el-table-column>
           <el-table-column prop="servers" label="主机" fit align="center">
             <template slot-scope="scope">
               <div v-for="item in scope.row.servers">
@@ -45,7 +45,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="run_tag" label="运行版本" width="240px" align="center">
+          <el-table-column prop="run_tag" label="运行版本" width="250" align="center">
             <template slot-scope="scope">
               <div v-for="item in scope.row.servers" v-if="item.run_tag">
                 {{ item.run_tag}}
