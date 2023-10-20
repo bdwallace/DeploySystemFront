@@ -15,15 +15,15 @@
           @selection-change="handleSelectionChange">
 
           <el-table-column type="selection" width="40"></el-table-column>
-          <el-table-column prop="project_name" label="项目名称" fit align="center"></el-table-column>
-          <el-table-column prop="alias" label="别名" fit align="center"></el-table-column>
+          <el-table-column prop="project_name" label="项目名称" width="120" align="center"></el-table-column>
+          <el-table-column prop="alias" label="别名" width="100" align="center"></el-table-column>
 
           <el-table-column prop="services" label="项目服务" fit align="center">
             <template slot-scope="scope">
                 <el-tag v-for="item in scope.row.services" size="small" style="margin-right: 3px">{{ item.svc_name }}</el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="nacos_url" label="Nacos地址" fit align="center"></el-table-column>
+          <el-table-column prop="nacos_url" label="Nacos地址" width="150" align="center"></el-table-column>
 <!--          <el-table-column prop="create_time" label="创建时间" fit align="center"></el-table-column>-->
 <!--          <el-table-column prop="update_time" label="更新时间" fit align="center"></el-table-column>-->
 <!--          <el-table-column prop="remark" label="备注" fit align="center"></el-table-column>-->
