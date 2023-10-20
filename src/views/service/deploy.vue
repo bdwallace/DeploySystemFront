@@ -48,7 +48,7 @@
           <el-table-column prop="servers" label="主机" fit align="center">
             <template slot-scope="scope">
               <div v-for="item in scope.row.servers">
-                <el-tooltip :content="item.online" placement="top">
+                <el-tooltip :content="item.online" placement="top" v-if="scope.row.svc_type==='java'">
                   <el-switch v-model="item.online"
                     active-color="#13ce66"
                     inactive-color="#ff4949"
@@ -64,8 +64,8 @@
                 <el-tag size="small" style="margin-right: 3px;" v-else>{{ item.run_time }}</el-tag>
                 <el-input readonly class="input_blue" style="width: 200px" size="mini" v-model="item.run_tag" ></el-input>
                 <el-tooltip effect="light" :content="item.url" placement="left" style="margin-right: 3px">
-                  <el-tag v-if="item.health==='200'" size="small" type="success" >健康</el-tag>
-                  <el-tag v-else-if="item.health==='未知'" size="small" type="warning">未知</el-tag>
+                  <el-tag v-if="item.health===200" size="small" type="success" >健康</el-tag>
+                  <el-tag v-else-if="!item.health || item.health==='未知'" size="small" type="warning">未知</el-tag>
                   <el-tag v-else type="danger" size="small">异常</el-tag>
                 </el-tooltip>
                 <el-button size="mini" type="primary" @click="restartClick(scope.row, item)">重启</el-button>
