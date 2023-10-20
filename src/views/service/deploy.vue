@@ -83,7 +83,9 @@
             <div>
               <el-button v-if="!tag_post" size="medium" type="primary" @click="commitTag" >确定Tag版本</el-button>
               <div v-else style="display:inline">
-                  <el-button type="primary" @click="on_submit_form(true)" style="margin-right: 50px">灰度发布
+                  <el-button type="primary" @click="on_submit_form(true)"
+                             style="margin-right: 50px" v-if="tableData[0].svc_type==='java'">
+                    灰度发布
                   </el-button>
                   <el-button @click="tag_post=false">取消</el-button>
 
