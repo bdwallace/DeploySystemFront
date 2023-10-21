@@ -34,7 +34,7 @@
 
               <el-tooltip  placement="bottom" :content="scope.row.old_tag">
                 <el-button type="success" size="mini" style="width: 50px" v-if="!tag_post"
-                         @click="scope.row.new_tag = scope.row.old_tag" >回退</el-button>
+                         @click="rollback(scope)" >回退</el-button>
               </el-tooltip>
 
 
@@ -129,7 +129,6 @@ export default {
       tag_post: false,
       is_backDialog: false,
       count: 0,
-
       itemCount: [],
       params: {page: 1, pagesize: 15, total: 0, search: ""},
       all_release: [
@@ -144,7 +143,8 @@ export default {
         // {color: '#00ff00', text: "daf550de2b27fa8226b5344bc5dae972db368148736d10118521c21642461f99"},
         // {color: '#FDFEFE', text: "daf550de2b27fa8226b5344bc5dae972db368148736d10118521c21642461f99"},
       ],
-      timer: null
+      timer: null,
+      checktimer: null
     }
   },
   created() {
@@ -214,6 +214,11 @@ export default {
         this.$message({type: 'error', message: response.msg});
       }
     },
+    async rollback(scope){
+      scope.row.new_tag = scope.row.old_tag
+      this.tag_post = true
+      await this.commitTag()
+    },
     async commitTag(){
       // console.log(this.tableData)
       var resp = await commitTag(this.tableData)
@@ -228,16 +233,27 @@ export default {
     },
     async checkClick(row){
       // console.log(row)
-      var response = await svcCheck({id: row.id}).catch(() => {
-        this.$message({type: "error", message: "请求失败"})
-        return 0
-      })
-     if (response.code !== 200){
+      var response = await svcCheck({id: row.id})
+      if (response.code !== 200){
         this.$message({type: "error", message: response.msg})
+        // this.$message({type: "error", message: "请求失败"})
+        clearInterval(this.checktimer)
+        this.checktimer = null
+        return 0
       } else {
         // this.$message({type: "success", message: response.msg})
        let index = this.tableData.indexOf(row)
        this.tableData[index].servers = response.data
+      }
+      var count = 0
+      response.data.forEach((item) =>{
+        if (item.health === 200){
+          count += 1
+        }
+      })
+      if (response.data.length === count){
+        clearInterval(this.checktimer)
+        this.checktimer = null
       }
     },
     checkRelease(row){
@@ -257,6 +273,12 @@ export default {
         this.$message({type: 'success', message: resp.msg})
         this.timer = setInterval(() => {
           setTimeout(this.getLog,1)
+        }, 60*30)
+        this.checktimer = setInterval(() => {
+          this.tableData.forEach(async (item) => {
+            setTimeout(await this.checkClick(item),1)
+          })
+
         }, 60*30)
       }
     },
@@ -294,6 +316,7 @@ export default {
     },
     async restartClick(row, item){
       let data = {
+        id: row.id,
         svc_name: row.svc_name,
         docker_port: row.docker_port,
         opt_type: 'restart',
@@ -365,6 +388,8 @@ export default {
   beforeDestroy() {
     clearInterval(this.timer)
     this.timer = null
+    clearInterval(this.checktimer)
+    this.checktimer = null
   }
 }
 </script>

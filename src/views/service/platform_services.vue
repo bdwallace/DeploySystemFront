@@ -306,6 +306,7 @@ export default {
     },
     async restartClick(row, item){
       let data = {
+        id: row.id,
         svc_name: row.svc_name,
         docker_port: row.docker_port,
         opt_type: 'restart',
