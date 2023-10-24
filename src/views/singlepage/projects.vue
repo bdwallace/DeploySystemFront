@@ -126,16 +126,7 @@ export default {
       params: {page: 1, pagesize: 15, total: 0, search: ""},
       multipleSelection: [],
       projects: [],
-      tableData: [
-        // {project_name: "预生产", alias: "Pre", nacos_url: "172.166.13.201:8848", create_time: "2020-05-19 18:59:54", update_time: "2023-05-07 15:39:45"},
-        // {project_name: "步多多", alias: "bdd", nacos_url: "10.9.100.51:8848", create_time: "2020-07-01 14:23:14", update_time: "2023-05-07 15:39:45"},
-        // {project_name: "微聊", alias: "wl", nacos_url: "10.210.0.91:8080", create_time: "2020-07-21 17:32:01", update_time: "2023-05-07 15:39:45"},
-        // {project_name: "开发环境钱包", alias: "wallet-dev", nacos_url: "10.210.1.233:8080", create_time: "2021-04-15 13:03:40", update_time: "2023-05-07 15:39:45"},
-        // {project_name: "预生产环境钱包", alias: "wallet-pre", nacos_url: "172.166.8.54:8848", create_time: "2021-07-27 17:04:06", update_time: "2023-05-07 15:39:45"},
-        // {project_name: "开发C2C", alias: "c2c-dev", nacos_url: "172.166.13.201:8848", create_time: "2022-01-28 13:13:17", update_time: "2023-05-07 15:39:45"},
-        // {project_name: "预生产c2c", alias: "c2c-pre", nacos_url: "172.166.13.201:8848", create_time: "2022-02-12 10:14:45", update_time: "2023-05-07 15:39:45"},
-
-      ]
+      tableData: []
     }
   },
   created() {

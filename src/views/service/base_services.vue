@@ -119,20 +119,7 @@ export default {
       params: {page: 1, pagesize: 15, total: 0, search: "", position: "基础服务"},
       multipleSelection: [],
       projects: [],
-      tableData: [
-        // {service_name: "zuul", envir: "预生产", ports: "8117:8117", deploy_time: "2023-9-12 12:00:00", platform: "6hao", servers: [
-        //   {public_ip: "152.221.175.184", inner_ip: "172.166.107.254",run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"}],
-        // },
-        // {service_name: "config_api", envir: "预生产", ports: "8117:8117", deploy_time: "2023-9-12 12:00:00", platform: "aozhou_kaijiang", servers: [
-        //   {public_ip: "52.221.75.184", inner_ip: "172.166.97.254",run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"},
-        //   {public_ip: "18.136.78.64",inner_ip: "172.166.97.172", run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"}],
-        // },
-        // {service_name: "lottery_api", envir: "预生产", ports: "8117:8117", deploy_time: "2023-9-12 12:00:00", platform: "8号", servers: [
-        //   {public_ip: "52.221.75.184", inner_ip: "172.166.97.254",run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"},
-        //   {public_ip: "18.136.78.64",inner_ip: "172.166.97.172", run_version: "RLS_LOTTERY_20230904_01", health: "200", run_time: "Up 37 hours", online: "上线"},
-        //   {public_ip: "18.136.78.59",inner_ip: "172.166.97.68", run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"},],
-        // },
-      ]
+      tableData: []
     }
   },
   created() {
@@ -183,16 +170,7 @@ export default {
         this.$message({type: 'info', message: '已取消删除'});
       })
     },
-    // async switchStatus(row){
-    //   let params = {'id': row.id, "mfa_on": row.mfa_on}
-    //   this.editData['mfa_on'] = row.mfa_on
-    //   var response = await updateUser(params)
-    //   if (response.code === 200) {
-    //       this.$message({type: 'success', message: response.msg});
-    //     } else {
-    //       this.$message({type: 'error', message: response.msg});
-    //     }
-    // },
+
     editClick(row){
       this.editData = row
       this.$router.push('/services/cs/' + row.id)

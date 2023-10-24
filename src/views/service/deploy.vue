@@ -131,18 +131,9 @@ export default {
       count: 0,
       itemCount: [],
       params: {page: 1, pagesize: 15, total: 0, search: ""},
-      all_release: [
-          // {id: 1, tag: "RLS_LOTTERY_20230620_01"},{id: 2, tag: "dev-temp"},{id: 3, tag: "RLS_OK_20230817_02"},{id: 1, tag: "RLS_LOTTERY_20230620_01"},
-      ],
-      tableData: [
-        // {svc_name: "eureka", port: "8134:8134", envir: "预生产hgjdfgjjklyil", platform: "aozhou_kaijiang", tag: "", release: [{id: 1, tag_name: "RLS_LOTTERY_20230620_01"},{id: 2, tag_name: "dev-temp"},{id: 3, tag_name: "RLS_OK_20230817_02"},{id: 4, tag_name: "RLS_LOTTERY_20230620_03"}], servers: [
-        //   {public_ip: "52.221.75.184", inner_ip: "172.166.97.254",run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"},
-        //   {public_ip: "18.136.78.64",inner_ip: "172.166.97.172", run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"}],}
-      ],
-      showText: [
-        // {color: '#00ff00', text: "daf550de2b27fa8226b5344bc5dae972db368148736d10118521c21642461f99"},
-        // {color: '#FDFEFE', text: "daf550de2b27fa8226b5344bc5dae972db368148736d10118521c21642461f99"},
-      ],
+      all_release: [],
+      tableData: [],
+      showText: [],
       timer: null,
       checktimer: null
     }

@@ -80,19 +80,7 @@ export default {
       params: {page: 1, pagesize: 15, total: 0, search: "", temp_type: "common"},
       multipleSelection: [],
       projects: [],
-      tableData: [
-        // {param_name: "def_other", data: {"spring.redis.host": "10.210.0.124", "spring.redis.port": 6379, "ak.stat.redis.host": "10.210.0.124"}, services: [{name: "superbackend"}, {name: "zuul"}, {name: "eureka"}, {name: "config_remoteservice_provider"},
-        //     {name: "lottery_mqtt"}, {name: "lottery_c2c_api"}, {name: "lottery_task"}], create_time: "2023-9-12 12:00:00", update_time: "2023-9-12 12:00:00"},
-        // {param_name: "eureka", data: {"LOG_SERVER_HOST": "10.210.0.124", "LOG_SERVER_UDP_PORT": 12201, "nacos.config.server-addr": "10.210.0.91:8080"}, services: [{name: "superbackend"}, {name: "zuul"}, {name: "eureka"}, {name: "config_remoteservice_provider"},
-        //   {name: "lottery_mqtt"}, {name: "lottery_c2c_api"}, {name: "lottery_task"}], create_time: "2023-9-12 12:00:00", update_time: "2023-9-12 12:00:00"},
-        // {param_name: "redis", services: [{name: "superbackend"}, {name: "zuul"}, {name: "eureka"}, {name: "config_remoteservice_provider"},
-        //   {name: "lottery_mqtt"}, {name: "lottery_c2c_api"}, {name: "lottery_task"}], create_time: "2023-9-12 12:00:00", update_time: "2023-9-12 12:00:00"},
-        // {param_name: "encrypt", services: [{name: "superbackend"}, {name: "zuul"}, {name: "eureka"}, {name: "config_remoteservice_provider"},
-        //   {name: "lottery_mqtt"}, {name: "lottery_c2c_api"}, {name: "lottery_task"}], create_time: "2023-9-12 12:00:00", update_time: "2023-9-12 12:00:00"},
-        // {param_name: "emqtt-elb", services: [{name: "merchant_1235"}, {name: "chat_1235"}, {name: "merchant"}, {name: "agent_1235"},
-        //   {name: "share_agent_1235"}, {name: "H5_1235"}, {name: "customer_1235"}], create_time: "2023-9-12 12:00:00", update_time: "2023-9-12 12:00:00"},
-        // {param_name: "emqtt", services: [{name: "lottery_mqtt"}], create_time: "2023-9-12 12:00:00", update_time: "2023-9-12 12:00:00"},
-      ]
+      tableData: []
     }
   },
   created() {

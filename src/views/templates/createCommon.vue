@@ -49,15 +49,7 @@
               <tr><td> &nbsp; </td></tr>
             </table>
         </el-form-item>
-<!--        <el-form-item prop="relate_service" label="关联服务">-->
-<!--          <el-transfer-->
-<!--            filterable-->
-<!--            :titles="titles"-->
-<!--            filter-placeholder="请输入关键字"-->
-<!--            v-model="formData.relate_services"-->
-<!--            :data="services" style="margin-left: 10px">-->
-<!--          </el-transfer>-->
-<!--        </el-form-item>-->
+
       </el-form>
 
       <el-button type="primary" @click="createTemplateCommit('create')" v-if="id==='0'">立即提交</el-button>
@@ -86,11 +78,7 @@ export default {
       itemDockerPort: [2375, 32375],
       on_submit_loading: false,
       id: this.$route.params.id,
-      services: [
-        {label: "zuul", key: "zuul"}, {label: "lottery_api", key: "lottery_api"}, {label: "lottery_remoteservice_provider", key: "lottery_remoteservice_provider"},
-        {label: "lottery_admin_api", key: "lottery_admin_api"}, {label: "eureka", key: "eureka"}, {label: "config_task", key: "config_task"},
-        {label: "common-api", key: "common-api"}, {label: "lottery_mqtt", key: "lottery_mqtt"}, {label: "data_center_api", key: "data_center_api"},
-      ],
+      services: [],
       titles: ["未关联", "已关联"],
       input: {},
       formData: {
