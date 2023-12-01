@@ -27,9 +27,7 @@
                 <el-tag v-for="item in scope.row.common_param" type="success" size="small" style="margin-right: 3px">{{ item }}</el-tag>
             </template>
           </el-table-column>
-<!--          <el-table-column prop="create_time" label="创建时间" width="180" align="center"></el-table-column>-->
           <el-table-column prop="create_time" label="创建时间" width="180" align="center"></el-table-column>
-<!--          <el-table-column prop="update_time" label="更新时间" width="180" align="center"></el-table-column>-->
           <el-table-column label="操作" width="180" align="center" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" icon="el-icon-edit" size="small" @click="editClick(scope.row)">编辑</el-button>
@@ -53,7 +51,7 @@
 </template>
 
 <script>
-import {deleteCommonParamTemplate, deleteService, getServiceTemplate} from "@/api";
+import {deleteService, getServiceTemplate} from "@/api";
 
 
 export default {
