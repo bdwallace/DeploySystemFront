@@ -153,20 +153,20 @@ export default {
       }
     }
     // 添加事件监听器
-    if (!localStorage.user_name || localStorage.status !== '200'){
-      console.log("事件监听器添加中")
-      window.addEventListener('message', messageListener);
-      console.log("事件监听器添加成功")
-      // this.$nextTick(() => {
-      //   setTimeout(() => {
-      //     this.fetchData();
-      //   }, 300)
-      // })
-    }else {
-      this.fetchData();
-    }
+    // if (!localStorage.user_name || localStorage.status !== '200'){
+    //   console.log("事件监听器添加中")
+    //   window.addEventListener('message', messageListener);
+    //   console.log("事件监听器添加成功")
+    //   // this.$nextTick(() => {
+    //   //   setTimeout(() => {
+    //   //     this.fetchData();
+    //   //   }, 300)
+    //   // })
+    // }else {
+    //   this.fetchData();
+    // }
 
-    // this.fetchData();
+    this.fetchData();
   },
   methods: {
     currentChange(page){
