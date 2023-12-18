@@ -29,9 +29,9 @@
                         v-if="item.run_time==='未知' || item.run_time===''" type="warning" >{{ item.run_time }}</el-tag>
                 <el-tag size="small" style="margin-right: 3px;width: 100px" v-else-if="item.run_time.indexOf('Up')===0" >{{ item.run_time }}</el-tag>
                 <el-tag size="small" style="margin-right: 3px;margin-top: 3px;width: 100px" v-else type="danger">{{ item.run_time }}</el-tag>
-                <el-tooltip effect="light" :content="item.url" placement="left">
-                  <el-tag v-if="item.health===200" size="small" type="success" >运行中</el-tag>
-                  <el-tag v-else-if="!item.health || item.health==='未知'" size="small" type="warning" style="width: 52px">未知</el-tag>
+                <el-tooltip effect="light" content="http://54.179.119.160:8134/login" placement="left">
+                  <el-tag v-if="item.health==='200'" size="small" type="success" >运行中</el-tag>
+                  <el-tag v-else-if="item.health==='未知'" size="small" type="warning" style="width: 52px">未知</el-tag>
                   <el-tag v-else type="danger" size="small" style="width: 52px">异常</el-tag>
                 </el-tooltip>
               </div>
@@ -40,8 +40,8 @@
           </el-table-column>
           <el-table-column prop="host_status" label="主机状态" width="100" align="center">
             <template slot-scope="scope">
-              <el-tag v-if='scope.row.host_status==="正常"' size="small" type="success" >正常</el-tag>
-              <el-tag v-else-if='scope.row.host_status==="未知"' size="small" type="warning" style="width: 52px">未知</el-tag>
+              <el-tag v-if="scope.row.host_status==='正常'" size="small" type="success" >正常</el-tag>
+              <el-tag v-else-if="scope.row.host_status==='未知' " size="small" type="warning" style="width: 52px">未知</el-tag>
               <el-tag v-else type="danger" size="small" style="width: 52px">异常</el-tag>
             </template>
           </el-table-column>
@@ -74,11 +74,11 @@
           <el-form-item prop="public_ip" label="外网IP" required>
             <el-input v-model="addHost.public_ip" placeholder="请输入外网IP" ></el-input>
           </el-form-item>
-<!--          <el-form-item prop="docker_port" label="Docker Port">-->
-<!--            <el-select v-model="addHost.docker_port" placeholder="请选择容器端口" style="width: 70%">-->
-<!--              <el-option v-for="item in itemDockerPort" :label="item" :value="item"></el-option>-->
-<!--            </el-select>-->
-<!--          </el-form-item>-->
+          <el-form-item prop="docker_port" label="Docker Port">
+            <el-select v-model="addHost.docker_port" placeholder="请选择容器端口" style="width: 70%">
+              <el-option v-for="item in itemDockerPort" :label="item" :value="item"></el-option>
+            </el-select>
+          </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer" style="text-align: center">
           <el-button @click="closeDialog">取 消</el-button>
@@ -102,11 +102,11 @@
           <el-form-item prop="public_ip" label="外网IP" required>
             <el-input v-model="editHost.public_ip" placeholder="请输入外网IP" ></el-input>
           </el-form-item>
-<!--          <el-form-item prop="docker_port" label="Docker Port">-->
-<!--            <el-select v-model="editHost.docker_port" placeholder="请选择容器端口" style="width: 70%">-->
-<!--              <el-option v-for="item in itemDockerPort" :label="item" :value="item"></el-option>-->
-<!--            </el-select>-->
-<!--          </el-form-item>-->
+          <el-form-item prop="docker_port" label="Docker Port">
+            <el-select v-model="editHost.docker_port" placeholder="请选择容器端口" style="width: 70%">
+              <el-option v-for="item in itemDockerPort" :label="item" :value="item"></el-option>
+            </el-select>
+          </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer" style="text-align: center">
           <el-button @click="dialogEditVisable = false">取 消</el-button>
@@ -201,7 +201,7 @@ export default {
         this.params.total = response.total
       }
 
-      var response = await getProject({page: 1, pagesize: 100}).catch(() => {
+      var response = await getProject(this.params).catch(() => {
         this.$message({type: 'error', message: "请求错误"})
         return 0
       })
@@ -265,28 +265,28 @@ export default {
       this.dialogEditVisable = false
       await this.fetchData()
     },
-    async dockerCheckCommit(i, data){
-      var response = await dockerCheck(data).catch(() => {
-        this.$message({type: "error", message: "请求失败"})
-        return 0
-      })
-      if (response.code === 401){
-        this.multipleSelection[i].host_status = "异常"
-      }else if (response.code !== 200){
-        this.$message({type: "error", message: response.msg})
-      } else {
-        // this.$message({type: "success", message: response.msg})
-        this.multipleSelection[i].services = response.data.svc
+    // async dockerCheckCommit(i, data){
+    //   var response = await dockerCheck(data).catch(() => {
+    //     this.$message({type: "error", message: "请求失败"})
+    //     return 0
+    //   })
+    //   if (response.code === 401){
+    //     this.multipleSelection[i].host_status = "异常"
+    //   }else if (response.code !== 200){
+    //     this.$message({type: "error", message: response.msg})
+    //   } else {
+    //     // this.$message({type: "success", message: response.msg})
+    //     this.multipleSelection[i].services = response.data.svc
+    //   }
+    // },
+    async dockerCheckClick(){
+      if (this.multipleSelection.length === 0) {
+        this.$message({type: "warning", message: "选择不能为空"})
+        return
       }
-    },
-    dockerCheckClick(){
-      // if (this.multipleSelection.length === 0) {
-      //   this.$message({type: "warning", message: "选择不能为空"})
-      //   return
-      // }
       let reqs = []
-      for (const i in this.tableData){
-        let obj = this.tableData[i]
+      for (const i in this.multipleSelection){
+        let obj = this.multipleSelection[i]
         console.log(obj)
         let data = {
           id : obj.id,
@@ -295,48 +295,31 @@ export default {
           // docker_port: obj.docker_port,
           svc: obj.services
         }
-
-        var response = dockerCheck(data).catch(() => {
-          this.$message({type: "error", message: "请求失败"})
-          return 0
-        }).then(resp =>{
-          if (resp.code === 401){
-            this.tableData[i].host_status = "异常"
-          }else if (resp.code !== 200){
-            this.$message({type: "error", message: resp.msg})
+        // await this.dockerCheckCommit(i, data)
+        let req = new Promise((resolve, reject) =>{
+          dockerCheck(data).then( res => {
+            resolve(res)
+          }).catch(err=>{
+            reject(err)
+          })
+        })
+        reqs.push(req)
+      }
+      this.$message({type: "success", message: "检测中,请稍后"})
+      Promise.all(reqs).then( res => {
+        // console.log(res)
+        for (const i in res){
+          if (res[i].code === 401){
+            this.multipleSelection[i].host_status = "异常"
+          }else if (res[i].code !== 200){
+            this.$message({type: "error", message: res[i].msg})
           } else {
             // this.$message({type: "success", message: response.msg})
-            this.tableData[i].services = resp.data.svc
-            this.tableData[i].host_status = resp.data.svc[0].host_status
-            // console.log(this.tableData[i])
+            this.multipleSelection[i].services = res[i].data.svc
           }
-        })
-
-        // await this.dockerCheckCommit(i, data)
-        // let req = new Promise((resolve, reject) =>{
-        //   dockerCheck(data).then( res => {
-        //     resolve(res)
-        //   }).catch(err=>{
-        //     reject(err)
-        //   })
-        // })
-        // reqs.push(req)
-      }
-      // this.$message({type: "success", message: "检测中,请稍后"})
-      // Promise.all(reqs).then( res => {
-      //   // console.log(res)
-      //   for (const i in res){
-      //     if (res[i].code === 401){
-      //       this.multipleSelection[i].host_status = "异常"
-      //     }else if (res[i].code !== 200){
-      //       this.$message({type: "error", message: res[i].msg})
-      //     } else {
-      //       // this.$message({type: "success", message: response.msg})
-      //       this.multipleSelection[i].services = res[i].data.svc
-      //     }
-      //   }
-      //   this.$message({type: "success", message: "检测已完成"})
-      // })
+        }
+        // this.$message({type: "success", message: "检测已完成"})
+      })
 
     }
   }

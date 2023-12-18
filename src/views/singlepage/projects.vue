@@ -15,15 +15,15 @@
           @selection-change="handleSelectionChange">
 
           <el-table-column type="selection" width="40"></el-table-column>
-          <el-table-column prop="project_name" label="项目名称" width="120" align="center"></el-table-column>
-          <el-table-column prop="alias" label="别名" width="100" align="center"></el-table-column>
+          <el-table-column prop="project_name" label="项目名称" fit align="center"></el-table-column>
+          <el-table-column prop="alias" label="别名" fit align="center"></el-table-column>
 
           <el-table-column prop="services" label="项目服务" fit align="center">
             <template slot-scope="scope">
                 <el-tag v-for="item in scope.row.services" size="small" style="margin-right: 3px">{{ item.svc_name }}</el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="nacos_url" label="Nacos地址" width="150" align="center"></el-table-column>
+          <el-table-column prop="nacos_url" label="Nacos地址" fit align="center"></el-table-column>
 <!--          <el-table-column prop="create_time" label="创建时间" fit align="center"></el-table-column>-->
 <!--          <el-table-column prop="update_time" label="更新时间" fit align="center"></el-table-column>-->
 <!--          <el-table-column prop="remark" label="备注" fit align="center"></el-table-column>-->
@@ -96,7 +96,7 @@
 
       <div style="padding: 10px 16px;text-align: right;">
         <el-pagination background  layout="total, sizes, prev, pager, next, jumper"
-                     :page-size="params.pagesize" :page-sizes="[15,30,50,100]"
+                     :page-size="params.pagesize" :page-sizes="[10,30,50,100]"
                      :total="params.total"
                      @current-change="currentChange"
                      @size-change="handleSizeChange">
@@ -126,7 +126,16 @@ export default {
       params: {page: 1, pagesize: 15, total: 0, search: ""},
       multipleSelection: [],
       projects: [],
-      tableData: []
+      tableData: [
+        // {project_name: "预生产", alias: "Pre", nacos_url: "172.166.13.201:8848", create_time: "2020-05-19 18:59:54", update_time: "2023-05-07 15:39:45"},
+        // {project_name: "步多多", alias: "bdd", nacos_url: "10.9.100.51:8848", create_time: "2020-07-01 14:23:14", update_time: "2023-05-07 15:39:45"},
+        // {project_name: "微聊", alias: "wl", nacos_url: "10.210.0.91:8080", create_time: "2020-07-21 17:32:01", update_time: "2023-05-07 15:39:45"},
+        // {project_name: "开发环境钱包", alias: "wallet-dev", nacos_url: "10.210.1.233:8080", create_time: "2021-04-15 13:03:40", update_time: "2023-05-07 15:39:45"},
+        // {project_name: "预生产环境钱包", alias: "wallet-pre", nacos_url: "172.166.8.54:8848", create_time: "2021-07-27 17:04:06", update_time: "2023-05-07 15:39:45"},
+        // {project_name: "开发C2C", alias: "c2c-dev", nacos_url: "172.166.13.201:8848", create_time: "2022-01-28 13:13:17", update_time: "2023-05-07 15:39:45"},
+        // {project_name: "预生产c2c", alias: "c2c-pre", nacos_url: "172.166.13.201:8848", create_time: "2022-02-12 10:14:45", update_time: "2023-05-07 15:39:45"},
+
+      ]
     }
   },
   created() {
@@ -144,20 +153,20 @@ export default {
       }
     }
     // 添加事件监听器
-    // if (!localStorage.user_name || localStorage.status !== '200'){
-    //   console.log("事件监听器添加中")
-    //   window.addEventListener('message', messageListener);
-    //   console.log("事件监听器添加成功")
-    //   // this.$nextTick(() => {
-    //   //   setTimeout(() => {
-    //   //     this.fetchData();
-    //   //   }, 300)
-    //   // })
-    // }else {
-    //   this.fetchData();
-    // }
+    if (!localStorage.user_name || localStorage.status !== '200'){
+      console.log("事件监听器添加中")
+      window.addEventListener('message', messageListener);
+      console.log("事件监听器添加成功")
+      // this.$nextTick(() => {
+      //   setTimeout(() => {
+      //     this.fetchData();
+      //   }, 300)
+      // })
+    }else {
+      this.fetchData();
+    }
 
-    this.fetchData();
+    // this.fetchData();
   },
   methods: {
     currentChange(page){

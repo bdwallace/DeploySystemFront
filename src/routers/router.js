@@ -20,14 +20,15 @@ export const constantRoutes = [
     component: Layout,
     meta: {
       title: "项目管理",
-      icon: "iconfont icon-project"
+      icon: "iconfont icon-project",
+      keepAlive: false
     },
     children: [{
       path: "",
       name: "项目管理",
       hidden: false,
       component: () => import('@/views/singlepage/projects.vue'),
-      meta: { title: "项目管理",icon: "iconfont icon-project" }
+      meta: { title: "项目管理",icon: "iconfont icon-project",keepAlive: false }
     }]
   },
   {
