@@ -374,7 +374,7 @@ export default {
         // this.params.total = resp.total
       }
 
-      var response = await getHosts(this.params).catch(() => {
+      var response = await getHosts({page: 1, pagesize: 200}).catch(() => {
         this.$message({type: 'error', message: "请求错误"})
         return 0
       })
@@ -383,8 +383,8 @@ export default {
       }else {
         this.allhosts = response.data
       }
-      this.params.pagesize = 30
-      var response = await getCommonParamTemplate(this.params).catch(() => {
+
+      var response = await getCommonParamTemplate({page: 1, pagesize: 200}).catch(() => {
         this.$message({type: 'error', message: "请求错误"})
         return 0
       })

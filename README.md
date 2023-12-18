@@ -1,5 +1,5 @@
-# 域名管理系统
-## 文档内容与实际部署环境有所差异，文档内容难免有所疏漏，部署和使用过程中遇到问题请及时沟通！
+# 自动发布系统
+
 ## 拉取代码
 ```angular2html
 https://gitops.one2.cc/devops/deploysystemfront.git

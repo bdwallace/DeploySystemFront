@@ -83,7 +83,7 @@
 
       <div style="padding: 10px 16px;text-align: right;">
         <el-pagination background  layout="total, sizes, prev, pager, next, jumper"
-                     :page-size="params.pagesize" :page-sizes="[10,30,50,100]"
+                     :page-size="params.pagesize" :page-sizes="[15,30,50,100]"
                      :total="params.total"
                      @current-change="currentChange"
                      @size-change="handleSizeChange">
@@ -123,17 +123,7 @@ export default {
         config: [{}],
         name: ""
       },
-      tableData: [
-        // {name: "zuul参数模板", config:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
-        // {name: "eureka参数模板", config:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
-        // {name: "config_remoteservice_provider参数模板", config:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
-        // {name: "lottery_api参数模板", config:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
-        // {name: "config_timer参数模板", config:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
-        // {name: "lottery_risk参数模板", config:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
-        // {name: "HK-azkaijiang-akbet参数模板", config:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
-        // {name: "kaijiang_6hao参数模板", config:[{value: "-e PORT=8800"}, {value: "-e server.port=8110"}], create_time: "2023-9-14 13:18:30"},
-
-      ]
+      tableData: []
     }
   },
   created() {

@@ -27,9 +27,7 @@
                 <el-tag v-for="item in scope.row.common_param" type="success" size="small" style="margin-right: 3px">{{ item }}</el-tag>
             </template>
           </el-table-column>
-<!--          <el-table-column prop="create_time" label="创建时间" width="180" align="center"></el-table-column>-->
           <el-table-column prop="create_time" label="创建时间" width="180" align="center"></el-table-column>
-<!--          <el-table-column prop="update_time" label="更新时间" width="180" align="center"></el-table-column>-->
           <el-table-column label="操作" width="180" align="center" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" icon="el-icon-edit" size="small" @click="editClick(scope.row)">编辑</el-button>
@@ -53,7 +51,7 @@
 </template>
 
 <script>
-import {deleteCommonParamTemplate, deleteService, getServiceTemplate} from "@/api";
+import {deleteService, getServiceTemplate} from "@/api";
 
 
 export default {
@@ -61,19 +59,7 @@ export default {
   data() {
     return{
       params: {page: 1, pagesize: 15, total: 0, search: "", is_template: '是'},
-      tableData: [
-        // {temp_name: 'zuul服务模板', common_param: ["def_other", "jvm-812M", "zuul-elb", "mysql"], define_param: ["zuul参数模板"], create_time: "2023-9-15 10:08:12", update_time: "2023-9-15 10:08:12", remark: "空"},
-        // {temp_name: 'config_api服务模板', common_param: ["emqtt", "APP_ICON","eureka"], define_param: ["zuul参数模板"], create_time: "2023-9-15 10:08:12", update_time: "2023-9-15 10:08:12", remark: "空"},
-        // {temp_name: 'lottery_api服务模板', common_param: ["jvm-812M", "eureka", "mysql", "encrypt", "APP_ICON"], define_param: ["zuul参数模板"], create_time: "2023-9-15 10:08:12", update_time: "2023-9-15 10:08:12", remark: "空"},
-        // {temp_name: 'download_6hao_2服务模板', common_param: ["jvm-812M","eureka"], define_param: ["lottery_api参数模板", "eureka参数模板"], create_time: "2023-9-15 10:08:12", update_time: "2023-9-15 10:08:12", remark: "空"},
-        // {temp_name: 'eureka服务模板', common_param: ["zuul-elb", "encrypt"], define_param: ["zuul参数模板"], create_time: "2023-9-15 10:08:12", update_time: "2023-9-15 10:08:12", remark: "空"},
-        // {temp_name: 'lottery_admin_api服务模板', common_param: ["VUE_APP_CONFIG-202207","eureka"], define_param: ["zuul参数模板"], create_time: "2023-9-15 10:08:12", update_time: "2023-9-15 10:08:12", remark: "空"},
-        // {temp_name: 'config_task服务模板', common_param: ["zuul-elb", "jvm-300M"], define_param: ["lottery_api参数模板"], create_time: "2023-9-15 10:08:12", update_time: "2023-9-15 10:08:12", remark: "空"},
-        // {temp_name: 'lottery_mysql2es_sync服务模板', common_param: ["jvm-300M", "APP_ICON"], define_param: ["zuul自定义参"], create_time: "2023-9-15 10:08:12", update_time: "2023-9-15 10:08:12", remark: "空"},
-        // {temp_name: 'H5_U8服务模板', common_param: ["APP_ICON", "merchant_elb"], define_param: ["zuul参数模板"], create_time: "2023-9-15 10:08:12", update_time: "2023-9-15 10:08:12", remark: "空"},
-        // {temp_name: 'merchant_u8服务模板', common_param: ["def_other","APP_ICON"], define_param: ["zuul参数模板"], create_time: "2023-9-15 10:08:12", update_time: "2023-9-15 10:08:12", remark: "空"},
-
-      ]
+      tableData: []
     }
   },
   created() {

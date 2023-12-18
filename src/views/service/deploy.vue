@@ -27,14 +27,14 @@
               </el-tag>
               <el-input v-if="tag_post" v-model="scope.row.new_tag" size="mini" disabled readonly style="width: 280px"></el-input>
               <el-select v-else v-model="scope.row.new_tag" filterable size="mini" style="width: 280px;margin-right: 3px"  @change="checkRelease(scope.row.new_tag)">
-                <el-option v-for="item in scope.row.release" style="font-size: 5px;"
+                <el-option v-for="item in scope.row.release"
                            :key="item" :label="item" :value="item">
                 </el-option>
               </el-select>
 
               <el-tooltip  placement="bottom" :content="scope.row.old_tag">
                 <el-button type="success" size="mini" style="width: 50px" v-if="!tag_post"
-                         @click="scope.row.new_tag = scope.row.old_tag" >回退</el-button>
+                         @click="rollback(scope)" >回退</el-button>
               </el-tooltip>
 
 
@@ -48,7 +48,7 @@
           <el-table-column prop="servers" label="主机" fit align="center">
             <template slot-scope="scope">
               <div v-for="item in scope.row.servers">
-                <el-tooltip :content="item.online" placement="top">
+                <el-tooltip :content="item.online" placement="top" v-if="scope.row.svc_type==='java'">
                   <el-switch v-model="item.online"
                     active-color="#13ce66"
                     inactive-color="#ff4949"
@@ -63,9 +63,9 @@
                 <el-tag size="small" style="margin-right: 3px;width: 83px" v-else-if="item.run_time.indexOf('exited')===0" type="danger" >{{ item.run_time }}</el-tag>
                 <el-tag size="small" style="margin-right: 3px;" v-else>{{ item.run_time }}</el-tag>
                 <el-input readonly class="input_blue" style="width: 200px" size="mini" v-model="item.run_tag" ></el-input>
-                <el-tooltip effect="light" content="http://54.179.119.160:8134/login" placement="left" style="margin-right: 3px">
-                  <el-tag v-if="item.health==='200'" size="small" type="success" >健康</el-tag>
-                  <el-tag v-else-if="item.health==='未知'" size="small" type="warning">未知</el-tag>
+                <el-tooltip effect="light" :content="item.url" placement="left" style="margin-right: 3px">
+                  <el-tag v-if="item.health===200" size="small" type="success" >健康</el-tag>
+                  <el-tag v-else-if="!item.health || item.health==='未知'" size="small" type="warning">未知</el-tag>
                   <el-tag v-else type="danger" size="small">异常</el-tag>
                 </el-tooltip>
                 <el-button size="mini" type="primary" @click="restartClick(scope.row, item)">重启</el-button>
@@ -83,7 +83,9 @@
             <div>
               <el-button v-if="!tag_post" size="medium" type="primary" @click="commitTag" >确定Tag版本</el-button>
               <div v-else style="display:inline">
-                  <el-button type="primary" @click="on_submit_form(true)" style="margin-right: 50px">灰度发布
+                  <el-button type="primary" @click="on_submit_form(true)"
+                             style="margin-right: 50px" v-if="tableData[0].svc_type==='java'">
+                    灰度发布
                   </el-button>
                   <el-button @click="tag_post=false">取消</el-button>
 
@@ -127,22 +129,13 @@ export default {
       tag_post: false,
       is_backDialog: false,
       count: 0,
-
       itemCount: [],
       params: {page: 1, pagesize: 15, total: 0, search: ""},
-      all_release: [
-          // {id: 1, tag: "RLS_LOTTERY_20230620_01"},{id: 2, tag: "dev-temp"},{id: 3, tag: "RLS_OK_20230817_02"},{id: 1, tag: "RLS_LOTTERY_20230620_01"},
-      ],
-      tableData: [
-        // {svc_name: "eureka", port: "8134:8134", envir: "预生产hgjdfgjjklyil", platform: "aozhou_kaijiang", tag: "", release: [{id: 1, tag_name: "RLS_LOTTERY_20230620_01"},{id: 2, tag_name: "dev-temp"},{id: 3, tag_name: "RLS_OK_20230817_02"},{id: 4, tag_name: "RLS_LOTTERY_20230620_03"}], servers: [
-        //   {public_ip: "52.221.75.184", inner_ip: "172.166.97.254",run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"},
-        //   {public_ip: "18.136.78.64",inner_ip: "172.166.97.172", run_version: "RLS_LOTTERY_20230904_01", health: "未知", run_time: "未知", online: "上线"}],}
-      ],
-      showText: [
-        // {color: '#00ff00', text: "daf550de2b27fa8226b5344bc5dae972db368148736d10118521c21642461f99"},
-        // {color: '#FDFEFE', text: "daf550de2b27fa8226b5344bc5dae972db368148736d10118521c21642461f99"},
-      ],
-      timer: null
+      all_release: [],
+      tableData: [],
+      showText: [],
+      timer: null,
+      checktimer: null
     }
   },
   created() {
@@ -212,6 +205,11 @@ export default {
         this.$message({type: 'error', message: response.msg});
       }
     },
+    async rollback(scope){
+      scope.row.new_tag = scope.row.old_tag
+      this.tag_post = true
+      await this.commitTag()
+    },
     async commitTag(){
       // console.log(this.tableData)
       var resp = await commitTag(this.tableData)
@@ -226,16 +224,27 @@ export default {
     },
     async checkClick(row){
       // console.log(row)
-      var response = await svcCheck({id: row.id}).catch(() => {
-        this.$message({type: "error", message: "请求失败"})
-        return 0
-      })
-     if (response.code !== 200){
+      var response = await svcCheck({id: row.id})
+      if (response.code !== 200){
         this.$message({type: "error", message: response.msg})
+        // this.$message({type: "error", message: "请求失败"})
+        clearInterval(this.checktimer)
+        this.checktimer = null
+        return 0
       } else {
         // this.$message({type: "success", message: response.msg})
        let index = this.tableData.indexOf(row)
        this.tableData[index].servers = response.data
+      }
+      var count = 0
+      response.data.forEach((item) =>{
+        if (item.health === 200){
+          count += 1
+        }
+      })
+      if (response.data.length === count){
+        clearInterval(this.checktimer)
+        this.checktimer = null
       }
     },
     checkRelease(row){
@@ -246,14 +255,21 @@ export default {
         return false
       }
     },
-    async on_submit_form(){
-      var resp = await commitDeployTask({"services": this.tableData, "task_name": this.task_name})
+    async on_submit_form(gray_deploy){
+      // console.log(this.tableData)
+      var resp = await commitDeployTask({"services": this.tableData, "task_name": this.task_name, "gray_deploy": gray_deploy})
       if (resp.code !== 200){
         this.$message({type: 'warning', message: resp.msg})
       }else {
         this.$message({type: 'success', message: resp.msg})
         this.timer = setInterval(() => {
           setTimeout(this.getLog,1)
+        }, 60*30)
+        this.checktimer = setInterval(() => {
+          this.tableData.forEach(async (item) => {
+            setTimeout(await this.checkClick(item),1)
+          })
+
         }, 60*30)
       }
     },
@@ -291,6 +307,7 @@ export default {
     },
     async restartClick(row, item){
       let data = {
+        id: row.id,
         svc_name: row.svc_name,
         docker_port: row.docker_port,
         opt_type: 'restart',
@@ -325,6 +342,7 @@ export default {
     },
     async closeClick(row, item){
       let data = {
+        id: row.id,
         svc_name: row.svc_name,
         docker_port: row.docker_port,
         opt_type: 'stop',
@@ -362,6 +380,8 @@ export default {
   beforeDestroy() {
     clearInterval(this.timer)
     this.timer = null
+    clearInterval(this.checktimer)
+    this.checktimer = null
   }
 }
 </script>

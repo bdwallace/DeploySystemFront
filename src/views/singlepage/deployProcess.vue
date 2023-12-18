@@ -75,7 +75,7 @@
 
       <div style="padding: 10px 16px;text-align: right;">
         <el-pagination background layout="total, sizes, prev, pager, next, jumper"
-                       :page-size="params.pagesize" :page-sizes="[10,30,50,100]"
+                       :page-size="params.pagesize" :page-sizes="[15,30,50,100]"
                        :total="params.total"
                        @current-change="currentChange"
                        @size-change="handleSizeChange">
@@ -95,18 +95,7 @@ export default {
   data() {
     return {
       params: {page: 1, pagesize: 15, total: 0, search: ""},
-      tableData: [
-        // {deploy_user: "wallace", deploy_time: "2023-9-14 16:10:32", deploy_service: "lottery_task", target_host: ['172.166.28.64', '172.166.6.156'],
-        //   deploy_envir: "预生产", old_version: "RLS_20230903T1652_23071401", new_version: "RLS_20230903T1652_23091412", deploy_status: "发布成功"},
-        // {deploy_user: "wallace", deploy_time: "2023-9-14 16:10:32", deploy_service: "data_center_api", target_host: ['172.166.28.64', '172.166.6.156'],
-        //   deploy_envir: "预生产", old_version: "RLS_20230903T1652_23071401", new_version: "RLS_20230903T1652_23091412", deploy_status: "发布失败"},
-        // {deploy_user: "wallace", deploy_time: "2023-9-14 16:10:32", deploy_service: "lottery_remoteservice_provider", target_host: ['172.166.28.64', '172.166.6.156'],
-        //   deploy_envir: "预生产", old_version: "RLS_20230903T1652_23071401", new_version: "RLS_20230903T1652_23091412", deploy_status: "发布中"},
-        // {deploy_user: "wallace", deploy_time: "2023-9-14 16:10:32", deploy_service: "lottery_mqtt", target_host: ['172.166.28.64', '172.166.6.156'],
-        //   deploy_envir: "预生产", old_version: "RLS_20230903T1652_23071401", new_version: "RLS_20230903T1652_23091412", deploy_status: "发布成功"},
-        // {deploy_user: "wallace", deploy_time: "2023-9-14 16:10:32", deploy_service: "mysql", target_host: ['172.166.28.64', '172.166.6.156'],
-        //   deploy_envir: "预生产", old_version: "RLS_20230903T1652_23071401", new_version: "RLS_20230903T1652_23091412", deploy_status: "发布成功"},
-      ]
+      tableData: []
     }
   },
   created() {
